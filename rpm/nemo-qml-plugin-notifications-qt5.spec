@@ -67,7 +67,7 @@ rm -rf %{buildroot}
 # << install pre
 %qmake_install
 mkdir -p %{buildroot}/%{_docdir}/%{name}
-cp -R doc/html/* %{buildroot}/%{_docdir}/%{name}/
+cp -R html/* %{buildroot}/%{_docdir}/%{name}/
 
 # >> install post
 # << install post

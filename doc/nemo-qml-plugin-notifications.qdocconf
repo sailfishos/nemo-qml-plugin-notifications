@@ -1,0 +1,44 @@
+#include(compat.qdocconf)
+#include(macros.qdocconf)
+#include(qt-cpp-ignore.qdocconf)
+#include(qt-defines.qdocconf)
+
+#indexes         = ../src/qt.index
+
+language        = Cpp
+
+project         = Nemo QML Plugin Notifications
+description     = Nemo QML Plugin Notifications Reference Documentation
+versionsym      =
+version         = 1.0.8
+url             = 
+
+headerdirs = ../src
+sourcedirs = src ../src
+
+#tagfile = ../html/nemo-qml-plugin-notifications.tags
+
+qhp.projects            = notifications
+
+qhp.notifications.file               = nemo-qml-plugin-notifications.qhp
+qhp.notifications.namespace          = org.nemomobile.notifications.100
+qhp.notifications.virtualFolder      = nemo-qml-plugin-notifications
+qhp.notifications.indexTitle         = Nemo QML Plugin Notifications
+qhp.notifications.indexRoot          =
+
+qhp.notifications.filterAttributes   = org.nemomobile.notifications 1.0.8
+#qhp.notifications.customFilters.TransferEngine.name = Nemo Mobile notification C++/QML classes 1.0.8
+#qhp.notifications.customFilters.TransferEngine.filterAttributes = org.nemomobile.notifications 1.0.8
+
+HTML.footer += \
+    "<div class=\"footer\">\n" \
+    "  <p><acronym title=\"Copyright\">&copy;</acronym> 2016 Jolla OY</p>\n" \
+    "  <p>All other trademarks are property of their respective owners.</p>\n" \
+    "  <p>\n" \
+    "    This document may be used under the terms of the " \
+    "    <a href=\"http://www.gnu.org/licenses/fdl.html\">GNU Free Documentation License version 1.3</a>" \
+    "    as published by the Free Software Foundation." \
+    "  </p>\n" \
+    "</div>\n"
+
+navigation.homepage = "Nemo QML Plugin Notifications"

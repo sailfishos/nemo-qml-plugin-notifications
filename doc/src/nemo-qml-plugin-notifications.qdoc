@@ -1,5 +1,5 @@
 /*!
-    \title Nemo QML Plugins - Notifications classes
+    \title Nemo QML Plugin Notifications
     \page index.html
 
     \section1 Overview
@@ -17,4 +17,8 @@
     \list
     \li \l{libnemonotifications::Notification}
     \endlist
+*/
+
+/*!
+    \qmlmodule org.nemomobile.notifications 1.0
 */

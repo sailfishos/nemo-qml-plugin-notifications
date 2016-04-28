@@ -1,10 +1,8 @@
-QDOC = qdoc
-QHELPGENERATOR = qhelpgenerator
-QDOCCONF = config/nemo-qml-plugin-notifications.qdocconf
-QHELPFILE = html/nemo-qml-plugin-notifications.qhp
-QCHFILE = html/nemo-qml-plugin-notifications.qch
+CONFIG += mer-qdoc-template
+MER_QDOC.project = nemo-qml-plugin-notifications
+MER_QDOC.config = doc/nemo-qml-plugin-notifications.qdocconf
+MER_QDOC.style = offline
+MER_QDOC.path = /usr/share/doc/nemo-qml-plugin-notifications-qt5
 
-docs.commands = ($$QDOC $$PWD/$$QDOCCONF) && \
-                ($$QHELPGENERATOR $$PWD/$$QHELPFILE -o $$PWD/$$QCHFILE)
-
-QMAKE_EXTRA_TARGETS += docs
+OTHER_FILES += \
+    $$PWD/src/nemo-qml-plugin-notifications.qdoc

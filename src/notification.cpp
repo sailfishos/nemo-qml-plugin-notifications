@@ -1406,6 +1406,25 @@ QList<QObject*> Notification::notifications(const QString &owner)
 }
 
 /*!
+    \fn libnemonotifications::Notification::notificationsByCategory(const QString &)
+
+    Returns a list of existing notifications whose 'category' hint value
+    matches \a category. This requires privileged access rights from the caller.
+
+    The returned objects are instances of the \c Notification class. The caller takes ownership and
+    should destroy them when they are no longer required.
+ */
+QList<QObject *> Notification::notificationsByCategory(const QString &category)
+{
+    QList<NotificationData> notifications = notificationManager()->GetNotificationsByCategory(category);
+    QList<QObject*> objects;
+    foreach (const NotificationData &notification, notifications) {
+        objects.append(createNotification(notification, notificationManager()));
+    }
+    return objects;
+}
+
+/*!
     \fn libnemonotifications::Notification::remoteAction(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QVariantList &)
 
     Helper function to assemble an object specifying a remote action, to be invoked via D-Bus.

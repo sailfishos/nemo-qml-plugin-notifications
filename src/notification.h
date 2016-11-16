@@ -68,6 +68,7 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(QString category READ category WRITE setCategory NOTIFY categoryChanged)
     Q_PROPERTY(QString appName READ appName WRITE setAppName NOTIFY appNameChanged)
     Q_PROPERTY(quint32 replacesId READ replacesId WRITE setReplacesId NOTIFY replacesIdChanged)
+    Q_PROPERTY(QString icon READ icon WRITE setIcon NOTIFY iconChanged)
     Q_PROPERTY(QString appIcon READ appIcon WRITE setAppIcon NOTIFY appIconChanged)
     Q_PROPERTY(QString summary READ summary WRITE setSummary NOTIFY summaryChanged)
     Q_PROPERTY(QString body READ body WRITE setBody NOTIFY bodyChanged)
@@ -103,6 +104,9 @@ public:
 
     quint32 replacesId() const;
     void setReplacesId(quint32 id);
+
+    QString icon() const;
+    void setIcon(const QString &icon);
 
     QString appIcon() const;
     void setAppIcon(const QString &appIcon);
@@ -178,6 +182,7 @@ signals:
     void categoryChanged();
     void appNameChanged();
     void replacesIdChanged();
+    void iconChanged();
     void appIconChanged();
     void summaryChanged();
     void bodyChanged();

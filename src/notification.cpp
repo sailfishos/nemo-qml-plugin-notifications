@@ -40,6 +40,7 @@ const char *HINT_CATEGORY = "category";
 const char *HINT_URGENCY = "urgency";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
+const char *HINT_ICON = "x-nemo-icon";
 const char *HINT_PREVIEW_BODY = "x-nemo-preview-body";
 const char *HINT_PREVIEW_SUMMARY = "x-nemo-preview-summary";
 const char *HINT_REMOTE_ACTION_PREFIX = "x-nemo-remote-action-";
@@ -527,6 +528,41 @@ void Notification::setAppName(const QString &appName)
     if (appName != this->appName()) {
         d->appName = appName;
         emit appNameChanged();
+    }
+}
+
+/*!
+    \qmlproperty string Notification::icon
+
+    Icon of the notication. The value can be a URI, an absolute filesystem path,
+    or a token to be interpreted by the theme image provider.
+
+    This might take precedence over \l appIcon depending on platform implementation.
+
+    This property is transmitted as the extension hint value "x-nemo-icon".
+ */
+/*!
+    \property libnemonotifications::Notification::icon
+
+    Icon of the notication. The value can be a URI, an absolute filesystem path,
+    or a token to be interpreted by the theme image provider.
+
+    This might take precedence over \l appIcon depending on platform implementation.
+
+    This property is transmitted as the extension hint value "x-nemo-icon".
+ */
+QString Notification::icon() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_ICON).toString();
+}
+
+void Notification::setIcon(const QString &icon)
+{
+    Q_D(Notification);
+    if (icon != this->icon()) {
+        d->hints.insert(HINT_ICON, icon);
+        emit iconChanged();
     }
 }
 

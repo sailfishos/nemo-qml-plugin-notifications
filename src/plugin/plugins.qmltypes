@@ -39,6 +39,7 @@ Module {
         Property { name: "timestamp"; type: "QDateTime" }
         Property { name: "previewSummary"; type: "string" }
         Property { name: "previewBody"; type: "string" }
+        Property { name: "icon"; type: "string" }
         Property { name: "itemCount"; type: "int" }
         Property { name: "remoteDBusCallServiceName"; type: "string" }
         Property { name: "remoteDBusCallObjectPath"; type: "string" }

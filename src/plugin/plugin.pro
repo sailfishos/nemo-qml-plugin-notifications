@@ -1,5 +1,5 @@
 TARGET = nemonotifications
-PLUGIN_IMPORT_PATH = org/nemomobile/notifications
+PLUGIN_IMPORT_PATH = Nemo/Notifications
 QT += dbus
 QT -= gui
 

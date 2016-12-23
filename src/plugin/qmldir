@@ -1,2 +1,2 @@
-module org.nemomobile.notifications
+module Nemo.Notifications
 plugin nemonotifications

@@ -259,7 +259,7 @@ class NotificationPrivate : public NotificationData
 
 /*!
     \qmltype Notification
-    \inqmlmodule org.nemomobile.notifications
+    \inqmlmodule Nemo.Notifications
     \instantiates libnemonotifications::Notification
     \brief Allows notifications to be published
 

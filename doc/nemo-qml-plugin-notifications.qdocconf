@@ -26,6 +26,16 @@ qhp.notifications.virtualFolder      = nemo-qml-plugin-notifications
 qhp.notifications.indexTitle         = Nemo QML Plugin Notifications
 qhp.notifications.indexRoot          =
 
+qhp.notifications.subprojects = qmltypes classes
+qhp.notifications.subprojects.qmltypes.title = QML Types
+qhp.notifications.subprojects.qmltypes.indexTitle = Nemo.Notifications QML Types
+qhp.notifications.subprojects.qmltypes.selectors = qmlclass
+qhp.notifications.subprojects.qmltypes.sortPages = true
+qhp.notifications.subprojects.classes.title = C++ Classes
+qhp.notifications.subprojects.classes.indexTitle = Nemo Notifications C++ Classes
+qhp.notifications.subprojects.classes.selectors = class fake:headerfile
+qhp.notifications.subprojects.classes.sortPages = true
+
 qhp.notifications.filterAttributes   = org.nemomobile.notifications 1.0.8
 #qhp.notifications.customFilters.TransferEngine.name = Nemo Mobile notification C++/QML classes 1.0.8
 #qhp.notifications.customFilters.TransferEngine.filterAttributes = org.nemomobile.notifications 1.0.8

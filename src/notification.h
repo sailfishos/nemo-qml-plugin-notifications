@@ -55,13 +55,6 @@ struct NotificationData
 class NotificationManagerProxy;
 class NotificationPrivate;
 
-#ifdef Q_QDOC
-// qdoc fails to link the documentation correctly because this project contains
-// a C++ class named Notification and a QML class named Notification.  Work around
-// this by making qdoc think the C++ class is in a namespace...
-namespace libnemonotifications {
-#endif
-
 class Q_DECL_EXPORT Notification : public QObject
 {
     Q_OBJECT
@@ -209,10 +202,6 @@ private:
 
     static Notification *createNotification(const NotificationData &data, QObject *parent = 0);
 };
-
-#ifdef Q_QDOC
-} // namespace libnemonotifications
-#endif
 
 QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);
 const QDBusArgument &operator>>(const QDBusArgument &, NotificationData &);

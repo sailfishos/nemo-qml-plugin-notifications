@@ -8,17 +8,23 @@
 
     \section2 QML types:
 
-    \list
-    \li \l{Notification}
-    \endlist
+    \generatelist{qmltypesbymodule Nemo.Notifications}
 
     \section2 C++ classes:
 
-    \list
-    \li \l{libnemonotifications::Notification}
-    \endlist
+    \generatelist annotatedclasses
 */
 
 /*!
     \qmlmodule Nemo.Notifications 1.0
+    \title Nemo.Notifications QML Types
+
+    This module includes the following types:
+
+*/
+
+/*!
+    \module NemoNotifications
+    \title Nemo Notifications C++ Classes
+
 */

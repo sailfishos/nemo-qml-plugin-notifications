@@ -260,7 +260,7 @@ class NotificationPrivate : public NotificationData
 /*!
     \qmltype Notification
     \inqmlmodule Nemo.Notifications
-    \instantiates libnemonotifications::Notification
+    \instantiates Notification
     \brief Allows notifications to be published
 
     The Notification type is a convenience type for using notifications
@@ -374,16 +374,11 @@ class NotificationPrivate : public NotificationData
     to be launched to handled the notification action, if required.
  */
 
-#ifdef Q_QDOC
-namespace libnemonotifications {
-#endif
-
 /*!
-    \namespace libnemonotifications
- */
-/*!
-    \class libnemonotifications::Notification
+    \class Notification
     \brief Allows notifications to be published
+    \inmodule NemoNotifications
+    \inheaderfile notification.h
 
     The Notification class is a convenience class for using notifications
     based on the
@@ -402,7 +397,7 @@ namespace libnemonotifications {
  */
 
 /*!
-    \enum libnemonotifications::Notification::Urgency
+    \enum Notification::Urgency
 
     This enum type describes the urgency level of a notification.
 
@@ -416,7 +411,7 @@ namespace libnemonotifications {
  */
 
 /*!
-    \enum libnemonotifications::Notification::CloseReason
+    \enum Notification::CloseReason
 
     This enum type describes the reason given when a notification is reported as closed.
 
@@ -430,7 +425,7 @@ namespace libnemonotifications {
  */
 
 /*!
-    \fn libnemonotifications::Notification::Notification(QObject *)
+    \fn Notification::Notification(QObject *)
 
     Constructs a new Notification, optionally using \a parent as the object parent.
  */
@@ -443,7 +438,7 @@ Notification::Notification(QObject *parent) :
 }
 
 /*!
-    \fn libnemonotifications::Notification::Notification(const NotificationData &, QObject *)
+    \fn Notification::Notification(const NotificationData &, QObject *)
     \internal
  */
 Notification::Notification(const NotificationData &data, QObject *parent) :
@@ -455,7 +450,7 @@ Notification::Notification(const NotificationData &data, QObject *parent) :
 }
 
 /*!
-    \fn libnemonotifications::Notification::~Notification()
+    \fn Notification::~Notification()
     \internal
  */
 Notification::~Notification()
@@ -474,7 +469,7 @@ Notification::~Notification()
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "category".
  */
 /*!
-    \property libnemonotifications::Notification::category
+    \property Notification::category
 
     The category whose properties should be applied to the notification by the Notification Manager.
 
@@ -508,7 +503,7 @@ void Notification::setCategory(const QString &category)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "app_name".
  */
 /*!
-    \property libnemonotifications::Notification::appName
+    \property Notification::appName
 
     The application name associated with this notification, for display purposes.
 
@@ -542,7 +537,7 @@ void Notification::setAppName(const QString &appName)
     This property is transmitted as the extension hint value "x-nemo-icon".
  */
 /*!
-    \property libnemonotifications::Notification::icon
+    \property Notification::icon
 
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
@@ -579,7 +574,7 @@ void Notification::setIcon(const QString &icon)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "replaces_id".
  */
 /*!
-    \property libnemonotifications::Notification::replacesId
+    \property Notification::replacesId
 
     The ID that should be used to replace or remove this notification.
 
@@ -614,7 +609,7 @@ void Notification::setReplacesId(uint id)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "app_icon".
  */
 /*!
-    \property libnemonotifications::Notification::appIcon
+    \property Notification::appIcon
 
     The icon for the application that this notification is associated with. The value can
     be a URI, an absolute filesystem path, or a token to be interpreted by the theme image provider.
@@ -645,7 +640,7 @@ void Notification::setAppIcon(const QString &appIcon)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "summary".
  */
 /*!
-    \property libnemonotifications::Notification::summary
+    \property Notification::summary
 
     The summary text briefly describing the notification.
     The summary should give a brief, single-line description of the notification.
@@ -675,7 +670,7 @@ void Notification::setSummary(const QString &summary)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "body".
  */
 /*!
-    \property libnemonotifications::Notification::body
+    \property Notification::body
 
     Optional detailed body text.
 
@@ -717,7 +712,7 @@ void Notification::setBody(const QString &body)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "urgency".
  */
 /*!
-    \property libnemonotifications::Notification::urgency
+    \property Notification::urgency
 
     The urgency level of the notification.
 
@@ -758,7 +753,7 @@ void Notification::setUrgency(Urgency urgency)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "expire_timeout".
  */
 /*!
-    \property libnemonotifications::Notification::expireTimeout
+    \property Notification::expireTimeout
 
     The number of milliseconds after display at which the notification should be automatically closed.
     A value of zero indicates that the notification should not close automatically, while -1
@@ -793,7 +788,7 @@ void Notification::setExpireTimeout(qint32 milliseconds)
     This property is transmitted as the extension hint value "x-nemo-timestamp".
  */
 /*!
-    \property libnemonotifications::Notification::timestamp
+    \property Notification::timestamp
 
     The timestamp is typically associated with an event that the notification relates
     to, rather than for the creation of the notification itself. If not specified, the
@@ -828,7 +823,7 @@ void Notification::setTimestamp(const QDateTime &timestamp)
     This property is transmitted as the extension hint value "x-nemo-preview-summary".
  */
 /*!
-    \property libnemonotifications::Notification::previewSummary
+    \property Notification::previewSummary
 
     Summary text to be shown in the preview banner for the notification, if any.
 
@@ -865,7 +860,7 @@ void Notification::setPreviewSummary(const QString &previewSummary)
     This property is transmitted as the extension hint value "x-nemo-preview-body".
  */
 /*!
-    \property libnemonotifications::Notification::previewBody
+    \property Notification::previewBody
 
     Body text to be shown in the preview banner for the notification, if any.
 
@@ -899,7 +894,7 @@ void Notification::setPreviewBody(const QString &previewBody)
     This property is transmitted as the extension hint value "x-nemo-item-count".
  */
 /*!
-    \property libnemonotifications::Notification::itemCount
+    \property Notification::itemCount
 
     The number of items represented by the notification.
     For example, a single notification can represent four missed calls by setting the count to 4. Defaults to 1.
@@ -931,7 +926,7 @@ void Notification::setItemCount(int itemCount)
     new details.
 */
 /*!
-    \fn libnemonotifications::Notification::publish()
+    \fn Notification::publish()
 
     Publishes the current state of the notification to the Notification Manager.
 
@@ -971,7 +966,7 @@ void Notification::publish()
     Closes the notification identified by \l replacesId.
 */
 /*!
-    \fn libnemonotifications::Notification::close()
+    \fn Notification::close()
 
     Closes the notification identified by \l replacesId.
  */
@@ -998,7 +993,7 @@ void Notification::close()
     \sa Notification::remoteActions
 */
 /*!
-    \fn void libnemonotifications::Notification::clicked()
+    \fn void Notification::clicked()
 
     Emitted when the notification is activated by the user.
 
@@ -1008,7 +1003,7 @@ void Notification::close()
     Notification Manager, so that a handler can be started running and invoked
     to service the request.
 
-    \sa libnemonotifications::Notification::remoteActions()
+    \sa remoteActions()
  */
 void Notification::checkActionInvoked(uint id, QString actionKey)
 {
@@ -1033,7 +1028,7 @@ void Notification::checkActionInvoked(uint id, QString actionKey)
     \endlist
 */
 /*!
-    \fn void libnemonotifications::Notification::closed(uint reason)
+    \fn void Notification::closed(uint reason)
 
     Emitted when the notification is reported closed by the notification manager.
     The \a reason value corresponds to a value defined by \l Notification::CloseReason.
@@ -1048,11 +1043,11 @@ void Notification::checkNotificationClosed(uint id, uint reason)
 }
 
 /*!
-    \property libnemonotifications::Notification::remoteDBusCallServiceName
+    \property Notification::remoteDBusCallServiceName
     \internal
  */
 /*!
-    \fn libnemonotifications::Notification::remoteDBusCallServiceName() const
+    \fn Notification::remoteDBusCallServiceName() const
     \internal
  */
 QString Notification::remoteDBusCallServiceName() const
@@ -1063,7 +1058,7 @@ QString Notification::remoteDBusCallServiceName() const
 }
 
 /*!
-    \fn libnemonotifications::Notification::setRemoteDBusCallServiceName(const QString &)
+    \fn Notification::setRemoteDBusCallServiceName(const QString &)
     \internal
  */
 void Notification::setRemoteDBusCallServiceName(const QString &serviceName)
@@ -1080,11 +1075,11 @@ void Notification::setRemoteDBusCallServiceName(const QString &serviceName)
 }
 
 /*!
-    \property libnemonotifications::Notification::remoteDBusCallObjectPath
+    \property Notification::remoteDBusCallObjectPath
     \internal
  */
 /*!
-    \fn libnemonotifications::Notification::remoteDBusCallObjectPath() const
+    \fn Notification::remoteDBusCallObjectPath() const
     \internal
  */
 QString Notification::remoteDBusCallObjectPath() const
@@ -1095,7 +1090,7 @@ QString Notification::remoteDBusCallObjectPath() const
 }
 
 /*!
-    \fn libnemonotifications::Notification::setRemoteDBusCallObjectPath(const QString &)
+    \fn Notification::setRemoteDBusCallObjectPath(const QString &)
     \internal
  */
 void Notification::setRemoteDBusCallObjectPath(const QString &objectPath)
@@ -1112,11 +1107,11 @@ void Notification::setRemoteDBusCallObjectPath(const QString &objectPath)
 }
 
 /*!
-    \property libnemonotifications::Notification::remoteDBusCallInterface
+    \property Notification::remoteDBusCallInterface
     \internal
  */
 /*!
-    \fn libnemonotifications::Notification::remoteDBusCallInterface() const
+    \fn Notification::remoteDBusCallInterface() const
     \internal
  */
 QString Notification::remoteDBusCallInterface() const
@@ -1127,7 +1122,7 @@ QString Notification::remoteDBusCallInterface() const
 }
 
 /*!
-    \fn libnemonotifications::Notification::setRemoteDBusCallInterface(const QString &)
+    \fn Notification::setRemoteDBusCallInterface(const QString &)
     \internal
  */
 void Notification::setRemoteDBusCallInterface(const QString &interface)
@@ -1144,11 +1139,11 @@ void Notification::setRemoteDBusCallInterface(const QString &interface)
 }
 
 /*!
-    \property libnemonotifications::Notification::remoteDBusCallMethodName
+    \property Notification::remoteDBusCallMethodName
     \internal
  */
 /*!
-    \fn libnemonotifications::Notification::remoteDBusCallMethodName() const
+    \fn Notification::remoteDBusCallMethodName() const
     \internal
  */
 QString Notification::remoteDBusCallMethodName() const
@@ -1159,7 +1154,7 @@ QString Notification::remoteDBusCallMethodName() const
 }
 
 /*!
-    \fn libnemonotifications::Notification::setRemoteDBusCallMethodName(const QString &)
+    \fn Notification::setRemoteDBusCallMethodName(const QString &)
     \internal
  */
 void Notification::setRemoteDBusCallMethodName(const QString &methodName)
@@ -1176,11 +1171,11 @@ void Notification::setRemoteDBusCallMethodName(const QString &methodName)
 }
 
 /*!
-    \property libnemonotifications::Notification::remoteDBusCallArguments
+    \property Notification::remoteDBusCallArguments
     \internal
  */
 /*!
-    \fn libnemonotifications::Notification::remoteDBusCallArguments() const
+    \fn Notification::remoteDBusCallArguments() const
     \internal
  */
 QVariantList Notification::remoteDBusCallArguments() const
@@ -1191,7 +1186,7 @@ QVariantList Notification::remoteDBusCallArguments() const
 }
 
 /*!
-    \fn libnemonotifications::Notification::setRemoteDBusCallArguments(const QVariantList &)
+    \fn Notification::setRemoteDBusCallArguments(const QVariantList &)
     \internal
  */
 void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
@@ -1208,7 +1203,7 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
 }
 
 /*!
-    \fn libnemonotifications::Notification::remoteDBusCallChanged()
+    \fn Notification::remoteDBusCallChanged()
     \internal
  */
 
@@ -1246,12 +1241,12 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
     This property is transmitted as the \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
  */
 /*!
-    \property libnemonotifications::Notification::remoteActions
+    \property Notification::remoteActions
 
     The remote actions registered for potential invocation by this notification.
 
     Remote actions specify D-Bus calls to be emitted by the Notification Manager when a notification
-    is activated by the user.  \l{libnemonotifications::Notification::remoteAction()}
+    is activated by the user.  \l{remoteAction()}
     {remoteAction} describes the format of a remote action specification.
 
     \note the current implementation of Lipstick will invoke the action named "default" when
@@ -1261,7 +1256,7 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
 
     This property is transmitted as the \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
 
-    \sa libnemonotifications::Notification::remoteAction()
+    \sa remoteAction()
  */
 QVariantList Notification::remoteActions() const
 {
@@ -1304,7 +1299,7 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
 }
 
 /*!
-    \fn libnemonotifications::Notification::setRemoteAction(const QVariant &)
+    \fn Notification::setRemoteAction(const QVariant &)
     \internal
  */
 
@@ -1321,7 +1316,7 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
     This property is transmitted as the extension hint value "x-nemo-origin".
 */
 /*!
-    \property libnemonotifications::Notification::origin
+    \property Notification::origin
 
     A property indicating the origin of the notification.
 
@@ -1357,7 +1352,7 @@ void Notification::setOrigin(const QString &origin)
     This property is transmitted as the extension hint value "x-nemo-max-content-lines".
 */
 /*!
-    \property libnemonotifications::Notification::maxContentLines
+    \property Notification::maxContentLines
 
     A property suggesting the maximum amount of content to display for the notification.
     The content lines include the summary line, so a single-line notification does
@@ -1381,7 +1376,7 @@ void Notification::setMaxContentLines(int max)
 }
 
 /*!
-    \fn libnemonotifications::Notification::hintValue(const QString &) const
+    \fn Notification::hintValue(const QString &) const
 
     Returns the value of the hint named \a hint.
  */
@@ -1392,7 +1387,7 @@ QVariant Notification::hintValue(const QString &hint) const
 }
 
 /*!
-    \fn libnemonotifications::Notification::setHintValue(const QString &, const QVariant &)
+    \fn Notification::setHintValue(const QString &, const QVariant &)
 
     Sets the value of the hint named \a hint to \a value.
  */
@@ -1403,7 +1398,7 @@ void Notification::setHintValue(const QString &hint, const QVariant &value)
 }
 
 /*!
-    \fn libnemonotifications::Notification::notifications()
+    \fn Notification::notifications()
 
     Returns a list of existing notifications whose 'x-nemo-owner' hint value
     matches the process name of the running process.
@@ -1423,7 +1418,7 @@ QList<QObject*> Notification::notifications()
 }
 
 /*!
-    \fn libnemonotifications::Notification::notifications(const QString &)
+    \fn Notification::notifications(const QString &)
 
     Returns a list of existing notifications whose 'x-nemo-owner' hint value
     matches \a owner.
@@ -1442,7 +1437,7 @@ QList<QObject*> Notification::notifications(const QString &owner)
 }
 
 /*!
-    \fn libnemonotifications::Notification::notificationsByCategory(const QString &)
+    \fn Notification::notificationsByCategory(const QString &)
 
     Returns a list of existing notifications whose 'category' hint value
     matches \a category. This requires privileged access rights from the caller.
@@ -1461,7 +1456,7 @@ QList<QObject *> Notification::notificationsByCategory(const QString &category)
 }
 
 /*!
-    \fn libnemonotifications::Notification::remoteAction(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QVariantList &)
+    \fn Notification::remoteAction(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QVariantList &)
 
     Helper function to assemble an object specifying a remote action, to be invoked via D-Bus.
 
@@ -1512,7 +1507,7 @@ QVariant Notification::remoteAction(const QString &name, const QString &displayN
 }
 
 /*!
-    \fn libnemonotifications::Notification::createNotification(const NotificationData &, QObject *)
+    \fn Notification::createNotification(const NotificationData &, QObject *)
     \internal
  */
 Notification *Notification::createNotification(const NotificationData &data, QObject *parent)

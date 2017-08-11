@@ -38,6 +38,7 @@ namespace {
 
 const char *HINT_CATEGORY = "category";
 const char *HINT_URGENCY = "urgency";
+const char *HINT_TRANSIENT = "transient";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
 const char *HINT_ICON = "x-nemo-icon";
@@ -1372,6 +1373,36 @@ void Notification::setMaxContentLines(int max)
     if (max != this->maxContentLines()) {
         d->hints.insert(HINT_MAX_CONTENT_LINES, max);
         emit maxContentLinesChanged();
+    }
+}
+
+// "is" prefix to avoid Javascript reserved word
+/*!
+    \qmlproperty int Notification::isTransient
+
+    A property suggesting that notification should be only briefly shown.
+
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "transient".
+*/
+/*!
+    \property Notification::transient
+
+    A property suggesting that notification should be only briefly shown.
+
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "transient".
+*/
+bool Notification::isTransient() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_TRANSIENT).toBool();
+}
+
+void Notification::setIsTransient(bool value)
+{
+    Q_D(Notification);
+    if (value != this->isTransient()) {
+        d->hints.insert(HINT_TRANSIENT, value);
+        emit isTransientChanged();
     }
 }
 

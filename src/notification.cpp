@@ -277,11 +277,10 @@ class NotificationPrivate : public NotificationData
 
     Notification content can be specified by setting the various properties
     on an instance of the Notification type, or can be handled by providing
-    a category definition file, whose properties are automatically applied
+    a category, whose properties are automatically applied
     to matching notifications by the Lipstick Notification Manager. Properties
     set in the notification instance will not be overwritten by values
-    listed in the category definition file. Please refer to Lipstick documentation
-    for a complete description of the category definition files.
+    listed in the category.
 
     A minimal example of using this type from a QML application:
 
@@ -289,7 +288,7 @@ class NotificationPrivate : public NotificationData
     Button {
         Notification {
             id: notification
-            category: "x-nemo.example"
+
             summary: "Notification summary"
             body: "Notification body"
             onClicked: console.log("Clicked")
@@ -311,18 +310,6 @@ class NotificationPrivate : public NotificationData
     \l clicked signal is emitted by the notification instance. If the
     application is no longer running at the relevant time, then the signal
     will be missed.
-
-    An example category definition file
-    /usr/share/lipstick/notificationcategories/x-nemo.example.conf:
-
-    \code
-    x-nemo-icon=icon-lock-sms
-    x-nemo-preview-icon=icon-s-status-sms
-    x-nemo-feedback=sms
-    x-nemo-priority=70
-    x-nemo-user-removable=true
-    x-nemo-user-closeable=false
-    \endcode
 
     A more exhaustive example of usage from a QML application:
 

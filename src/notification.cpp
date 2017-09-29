@@ -421,6 +421,7 @@ Notification::Notification(QObject *parent) :
     QObject(parent),
     d_ptr(new NotificationPrivate)
 {
+    d_ptr->hints.insert(HINT_URGENCY, static_cast<int>(Notification::Normal));
     connect(notificationManager(), SIGNAL(ActionInvoked(uint,QString)), this, SLOT(checkActionInvoked(uint,QString)));
     connect(notificationManager(), SIGNAL(NotificationClosed(uint,uint)), this, SLOT(checkNotificationClosed(uint,uint)));
 }

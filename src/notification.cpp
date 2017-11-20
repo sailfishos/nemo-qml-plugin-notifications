@@ -378,10 +378,6 @@ class NotificationPrivate : public NotificationData
     D-Bus.  This simplifies the process of creating, listing and closing
     notifications, since the necessary communications are handled by the
     class.
-
-    \note although \c Notification is shown here in the \c libnemonotification namespace, it is
-    in fact defined in the global namespace.  The namespace here is used to work around limitations
-    of the qdoc documentation generator.
  */
 
 /*!
@@ -392,10 +388,6 @@ class NotificationPrivate : public NotificationData
     \value Low The notification is not urgent.
     \value Normal The notification is like most other notifications.
     \value Critical The notification is of urgent relevance to the user.
-
-    \note although \c Notification is shown here in the \c libnemonotification namespace, it is
-    in fact defined in the global namespace.  The namespace here is used to work around limitations
-    of the qdoc documentation generator.
  */
 
 /*!
@@ -406,10 +398,6 @@ class NotificationPrivate : public NotificationData
     \value Expired The notification expireTimeout period elapsed.
     \value DismissedByUser The notification was dismissed by user action.
     \value Closed The notification was closed programatically.
-
-    \note although \c Notification is shown here in the \c libnemonotification namespace, it is
-    in fact defined in the global namespace.  The namespace here is used to work around limitations
-    of the qdoc documentation generator.
  */
 
 /*!
@@ -1568,7 +1556,3 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NotificationData 
 
     return argument;
 }
-
-#ifdef Q_QDOC
-} // namespace libnemonotifications
-#endif

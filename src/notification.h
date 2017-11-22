@@ -150,6 +150,7 @@ public:
     void setRemoteActions(const QVariantList &remoteActions);
     inline void setRemoteAction(const QVariant &remoteAction) { setRemoteActions(QVariantList() << remoteAction); }
 
+    // Deprecated
     QString origin() const;
     void setOrigin(const QString &origin);
 

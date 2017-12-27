@@ -1286,11 +1286,14 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
     A property indicating the origin of the notification.
 
     The origin hint can be used to associate an external property with a notification, separate
-    from the intermediary that reports the notificaiton. For example, a notification of a new
+    from the intermediary that reports the notification. For example, a notification of a new
     email is created and handled by an email client application, but notionally originates at
     the sender's email address.
 
     This property is transmitted as the extension hint value "x-nemo-origin".
+
+    \deprecated
+    This property is deprecated.
 */
 /*!
     \property Notification::origin
@@ -1298,11 +1301,14 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
     A property indicating the origin of the notification.
 
     The origin hint can be used to associate an external property with a notification, separate
-    from the intermediary that reports the notificaiton. For example, a notification of a new
+    from the intermediary that reports the notification. For example, a notification of a new
     email is created and handled by an email client application, but notionally originates at
     the sender's email address.
 
     This property is transmitted as the extension hint value "x-nemo-origin".
+
+    \deprecated
+    This property is deprecated.
 */
 QString Notification::origin() const
 {

@@ -18,4 +18,7 @@ qmldir.files += \
 qmldir.path +=  $$target.path
 INSTALLS += target qmldir
 
+qmltypes.commands = qmlplugindump -nonrelocatable Nemo.Notifications 1.0 > $$PWD/plugins.qmltypes
+QMAKE_EXTRA_TARGETS += qmltypes
+
 OTHER_FILES += qmldir

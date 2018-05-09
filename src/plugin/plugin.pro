@@ -13,8 +13,8 @@ SOURCES += plugin.cpp
 
 target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
 qmldir.files += \
-        $$_PRO_FILE_PWD_/qmldir \
-        $$_PRO_FILE_PWD_/plugins.qmltypes
+        qmldir \
+        plugins.qmltypes
 qmldir.path +=  $$target.path
 INSTALLS += target qmldir
 

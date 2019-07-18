@@ -38,19 +38,7 @@
 #include <QVariantHash>
 #include <QDBusArgument>
 
-struct NotificationData
-{
-    NotificationData();
-
-    QString appName;
-    quint32 replacesId;
-    QString appIcon;
-    QString summary;
-    QString body;
-    QHash<QString, QString> actions;
-    QVariantHash hints;
-    qint32 expireTimeout;
-};
+struct NotificationData;
 
 class NotificationManagerProxy;
 class NotificationPrivate;
@@ -208,11 +196,5 @@ private:
 
     static Notification *createNotification(const NotificationData &data, QObject *parent = 0);
 };
-
-QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);
-const QDBusArgument &operator>>(const QDBusArgument &, NotificationData &);
-
-Q_DECLARE_METATYPE(NotificationData)
-Q_DECLARE_METATYPE(QList<NotificationData>)
 
 #endif // NOTIFICATION_H

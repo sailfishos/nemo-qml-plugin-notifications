@@ -31,6 +31,7 @@
  */
 #include "notificationmanagerproxy.h"
 #include "notification.h"
+#include "notification_p.h"
 
 #include <QStringBuilder>
 
@@ -213,12 +214,6 @@ QVariantList decodeActionHints(const QHash<QString, QString> &actions, const QVa
     return rv;
 }
 
-}
-
-NotificationData::NotificationData()
-    : replacesId(0)
-    , expireTimeout(-1)
-{
 }
 
 class NotificationPrivate : public NotificationData

@@ -42,7 +42,7 @@ BuildRequires: qt5-plugin-sqldriver-sqlite
 
 %qmake5 VERSION=%{version}
 
-make %{?jobs:-j%jobs}
+make %{?_smp_mflags}
 make docs
 
 %install

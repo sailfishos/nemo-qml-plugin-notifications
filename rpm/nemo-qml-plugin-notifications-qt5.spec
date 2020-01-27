@@ -42,7 +42,7 @@ BuildRequires: qt5-plugin-sqldriver-sqlite
 
 %qmake5 VERSION=%{version}
 
-make %{?jobs:-j%jobs}
+make %{?_smp_mflags}
 make docs
 
 %install
@@ -63,21 +63,16 @@ sed 's/Nemo.Notifications/org.nemomobile.notifications/' < src/plugin/qmldir > %
 %files
 %defattr(-,root,root,-)
 %{_libdir}/libnemonotifications-qt5.so.*
-%dir %{_libdir}/qt5/qml/Nemo/Notifications
-%{_libdir}/qt5/qml/Nemo/Notifications/libnemonotifications.so
-%{_libdir}/qt5/qml/Nemo/Notifications/qmldir
-%{_libdir}/qt5/qml/Nemo/Notifications/plugins.qmltypes
+%{_libdir}/qt5/qml/Nemo/Notifications
 
 # org.nemomobile.notifications legacy import
-%dir %{_libdir}/qt5/qml/org/nemomobile/notifications
-%{_libdir}/qt5/qml/org/nemomobile/notifications/libnemonotifications.so
-%{_libdir}/qt5/qml/org/nemomobile/notifications/qmldir
+%{_libdir}/qt5/qml/org/nemomobile/notifications
 
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/libnemonotifications-qt5.so
 %{_libdir}/libnemonotifications-qt5.prl
-%{_includedir}/nemonotifications-qt5/*.h
+%{_includedir}/nemonotifications-qt5
 %{_libdir}/pkgconfig/nemonotifications-qt5.pc
 
 %files doc

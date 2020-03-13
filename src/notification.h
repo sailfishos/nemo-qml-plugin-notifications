@@ -68,12 +68,15 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(QString origin READ origin WRITE setOrigin NOTIFY originChanged)
     Q_PROPERTY(int maxContentLines READ maxContentLines WRITE setMaxContentLines NOTIFY maxContentLinesChanged)
     Q_PROPERTY(bool isTransient READ isTransient WRITE setIsTransient NOTIFY isTransientChanged)
+    Q_PROPERTY(QVariant progress READ progress WRITE setProgress RESET resetProgress NOTIFY progressChanged)
     Q_ENUMS(Urgency)
     Q_ENUMS(CloseReason)
+    Q_ENUMS(Progress)
 
 public:
     enum Urgency { Low = 0, Normal = 1, Critical = 2 };
     enum CloseReason { Expired = 0, DismissedByUser = 1, Closed = 2 };
+    enum Progress { ProgressIndeterminate = -1 };
 
     explicit Notification(QObject *parent = 0);
     virtual ~Notification();
@@ -148,6 +151,10 @@ public:
     bool isTransient() const;
     void setIsTransient(bool value);
 
+    QVariant progress() const;
+    void setProgress(const QVariant &value);
+    void resetProgress();
+
     QVariant hintValue(const QString &hint) const;
     void setHintValue(const QString &hint, const QVariant &value);
 
@@ -183,6 +190,7 @@ signals:
     void originChanged();
     void maxContentLinesChanged();
     void isTransientChanged();
+    void progressChanged();
 
 private slots:
     void checkActionInvoked(uint id, QString actionKey);

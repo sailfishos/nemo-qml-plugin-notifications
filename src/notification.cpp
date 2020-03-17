@@ -51,6 +51,7 @@ const char *HINT_ORIGIN = "x-nemo-origin";
 const char *HINT_OWNER = "x-nemo-owner";
 const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
 const char *DEFAULT_ACTION_NAME = "default";
+const char *HINT_PROGRESS = "x-nemo-progress";
 
 static inline QString processName() {
     // Defaults to the filename if not set
@@ -1380,6 +1381,45 @@ void Notification::setIsTransient(bool value)
     if (value != this->isTransient()) {
         d->hints.insert(HINT_TRANSIENT, value);
         emit isTransientChanged();
+    }
+}
+
+/*!
+    \qmlproperty var Notification::progress
+
+    Property containing the progress the notification represent. Value can be undefined for no progress,
+    Notification.ProgressIndeterminate for indetermiante state or real between 0.0 and 1.0 to represent progress percentage.
+*/
+/*!
+    \property Notification::progress
+
+    Property containing the progress the notification represent. Value can be undefined for no progress,
+    Notification::ProgressIndeterminate for indetermiante state or real between 0.0 and 1.0 to represent progress percentage.
+*/
+
+QVariant Notification::progress() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_PROGRESS);
+}
+
+void Notification::setProgress(const QVariant &value)
+{
+    Q_D(Notification);
+    if (value.isNull()) {
+        resetProgress();
+    } else if (value != this->progress()) {
+        d->hints.insert(HINT_PROGRESS, value);
+        emit progressChanged();
+    }
+}
+
+void Notification::resetProgress()
+{
+    Q_D(Notification);
+    if (d->hints.contains(HINT_PROGRESS)) {
+        d->hints.remove(HINT_PROGRESS);
+        emit progressChanged();
     }
 }
 

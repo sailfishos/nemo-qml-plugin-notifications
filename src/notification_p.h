@@ -40,12 +40,17 @@
 
 struct NotificationData
 {
+    struct ActionInfo {
+        QString name;
+        QString displayName;
+    };
+
     QString appName;
     quint32 replacesId = 0;
     QString appIcon;
     QString summary;
     QString body;
-    QHash<QString, QString> actions;
+    QList<ActionInfo> actions;
     QVariantHash hints;
     qint32 expireTimeout = -1;
 };

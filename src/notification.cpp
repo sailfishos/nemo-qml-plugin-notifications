@@ -99,23 +99,22 @@ QString encodeDBusCall(const QString &service, const QString &path, const QStrin
     return s;
 }
 
-QStringList encodeActions(const QHash<QString, QString> &actions)
+QStringList encodeActions(const QList<NotificationData::ActionInfo> &actions)
 {
     QStringList rv;
 
     // Actions are encoded as a sequence of name followed by displayName
-    QHash<QString, QString>::const_iterator it = actions.constBegin(), end = actions.constEnd();
-    for ( ; it != end; ++it) {
-        rv.append(it.key());
-        rv.append(it.value());
+    for (const NotificationData::ActionInfo &actionInfo : actions) {
+        rv.append(actionInfo.name);
+        rv.append(actionInfo.displayName);
     }
 
     return rv;
 }
 
-QHash<QString, QString> decodeActions(const QStringList &actions)
+QList<NotificationData::ActionInfo> decodeActions(const QStringList &actions)
 {
-    QHash<QString, QString> rv;
+    QList<NotificationData::ActionInfo> rv;
 
     QStringList::const_iterator it = actions.constBegin(), end = actions.constEnd();
     while (it != end) {
@@ -126,15 +125,16 @@ QHash<QString, QString> decodeActions(const QStringList &actions)
             displayName = *it;
             ++it;
         }
-        rv.insert(name, displayName);
+        const NotificationData::ActionInfo actionInfo = { name, displayName };
+        rv.append(actionInfo);
     }
 
     return rv;
 }
 
-QPair<QHash<QString, QString>, QVariantHash> encodeActionHints(const QVariantList &actions)
+QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const QVariantList &actions)
 {
-    QPair<QHash<QString, QString>, QVariantHash> rv;
+    QPair<QList<NotificationData::ActionInfo>, QVariantHash> rv;
 
     foreach (const QVariant &action, actions) {
         QVariantMap vm = action.value<QVariantMap>();
@@ -149,7 +149,8 @@ QPair<QHash<QString, QString>, QVariantHash> encodeActionHints(const QVariantLis
             const QString icon = vm["icon"].value<QString>();
 
             if (!service.isEmpty() && !path.isEmpty() && !iface.isEmpty() && !method.isEmpty()) {
-                rv.first.insert(actionName, displayName);
+                const NotificationData::ActionInfo actionInfo = { actionName, displayName };
+                rv.first.append(actionInfo);
                 rv.second.insert(QString(HINT_REMOTE_ACTION_PREFIX) + actionName, encodeDBusCall(service, path, iface, method, arguments));
                 if (!icon.isEmpty()) {
                     rv.second.insert(QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName, icon);
@@ -161,14 +162,13 @@ QPair<QHash<QString, QString>, QVariantHash> encodeActionHints(const QVariantLis
     return rv;
 }
 
-QVariantList decodeActionHints(const QHash<QString, QString> &actions, const QVariantHash &hints)
+QVariantList decodeActionHints(const QList<NotificationData::ActionInfo> &actions, const QVariantHash &hints)
 {
     QVariantList rv;
 
-    QHash<QString, QString>::const_iterator ait = actions.constBegin(), aend = actions.constEnd();
-    for ( ; ait != aend; ++ait) {
-        const QString &actionName = ait.key();
-        const QString &displayName = ait.value();
+    for (const NotificationData::ActionInfo &actionInfo : actions) {
+        const QString &actionName = actionInfo.name;
+        const QString &displayName = actionInfo.displayName;
 
         const QString hintName = QString(HINT_REMOTE_ACTION_PREFIX) + actionName;
         const QString &hint = hints[hintName].toString();
@@ -1247,18 +1247,22 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
             const QString actionName = vm["name"].value<QString>();
             if (!actionName.isEmpty()) {
                 d->hints.remove(QString(HINT_REMOTE_ACTION_PREFIX) + actionName);
-                d->actions.remove(actionName);
+                for (int i = 0; i < d->actions.count(); ++i) {
+                    if (d->actions.at(i).name == actionName) {
+                        d->actions.removeAt(i);
+                        break;
+                    }
+                }
             }
         }
 
         // Add the new actions and their associated hints
         d->remoteActions = remoteActions;
 
-        QPair<QHash<QString, QString>, QVariantHash> actionHints = encodeActionHints(remoteActions);
+        QPair<QList<NotificationData::ActionInfo>, QVariantHash> actionHints = encodeActionHints(remoteActions);
 
-        QHash<QString, QString>::const_iterator ait = actionHints.first.constBegin(), aend = actionHints.first.constEnd();
-        for ( ; ait != aend; ++ait) {
-            d->actions.insert(ait.key(), ait.value());
+        for (const NotificationData::ActionInfo &actionInfo : actionHints.first) {
+            d->actions.append(actionInfo);
         }
 
         QVariantHash::const_iterator hit = actionHints.second.constBegin(), hend = actionHints.second.constEnd();

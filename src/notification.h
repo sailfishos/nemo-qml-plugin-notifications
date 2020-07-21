@@ -146,6 +146,7 @@ public:
     QString origin() const;
     void setOrigin(const QString &origin);
 
+    // Obsolete
     int maxContentLines() const;
     void setMaxContentLines(int max);
 

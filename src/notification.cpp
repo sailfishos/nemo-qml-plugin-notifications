@@ -1355,6 +1355,7 @@ void Notification::setMaxContentLines(int max)
 {
     Q_D(Notification);
     if (max != this->maxContentLines()) {
+        qWarning() << "Notification::maxContentLines property is deprecated";
         d->hints.insert(HINT_MAX_CONTENT_LINES, max);
         emit maxContentLinesChanged();
     }

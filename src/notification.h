@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Vesa Halttunen <vesa.halttunen@jollamobile.com>
+ * Copyright (C) 2013 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -90,6 +90,7 @@ public:
     quint32 replacesId() const;
     void setReplacesId(quint32 id);
 
+    // Obsolete
     QString icon() const;
     void setIcon(const QString &icon);
 
@@ -120,7 +121,7 @@ public:
     int itemCount() const;
     void setItemCount(int itemCount);
 
-    // Deprecated 'remoteDBusCall...' functions:
+    // Obsoleted 'remoteDBusCall...' functions:
     QString remoteDBusCallServiceName() const;
     void setRemoteDBusCallServiceName(const QString &serviceName);
 
@@ -141,7 +142,7 @@ public:
     void setRemoteActions(const QVariantList &remoteActions);
     inline void setRemoteAction(const QVariant &remoteAction) { setRemoteActions(QVariantList() << remoteAction); }
 
-    // Deprecated
+    // Obsolete
     QString origin() const;
     void setOrigin(const QString &origin);
 

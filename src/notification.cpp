@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Vesa Halttunen <vesa.halttunen@jollamobile.com>
+ * Copyright (C) 2013 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -34,12 +34,14 @@
 #include "notification_p.h"
 
 #include <QStringBuilder>
+#include <QDebug>
 
 namespace {
 
 const char *HINT_CATEGORY = "category";
 const char *HINT_URGENCY = "urgency";
 const char *HINT_TRANSIENT = "transient";
+const char *HINT_APP_ICON = "app_icon";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
 const char *HINT_ICON = "x-nemo-icon";
@@ -505,9 +507,9 @@ void Notification::setAppName(const QString &appName)
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
 
-    This might take precedence over \l appIcon depending on platform implementation.
-
     This property is transmitted as the extension hint value "x-nemo-icon".
+
+    \obsolete
  */
 /*!
     \property Notification::icon
@@ -515,9 +517,9 @@ void Notification::setAppName(const QString &appName)
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
 
-    This might take precedence over \l appIcon depending on platform implementation.
-
     This property is transmitted as the extension hint value "x-nemo-icon".
+
+    \obsolete
  */
 QString Notification::icon() const
 {
@@ -529,6 +531,7 @@ void Notification::setIcon(const QString &icon)
 {
     Q_D(Notification);
     if (icon != this->icon()) {
+        qWarning() << "Notification sets deprecated icon property to" << icon << ", use appIcon instead";
         d->hints.insert(HINT_ICON, icon);
         emit iconChanged();
     }
@@ -592,14 +595,14 @@ void Notification::setReplacesId(uint id)
 QString Notification::appIcon() const
 {
     Q_D(const Notification);
-    return d->appIcon;
+    return d->hints.value(HINT_APP_ICON).toString();
 }
 
 void Notification::setAppIcon(const QString &appIcon)
 {
     Q_D(Notification);
     if (appIcon != this->appIcon()) {
-        d->appIcon = appIcon;
+        d->hints.insert(HINT_APP_ICON, appIcon);
         emit appIconChanged();
     }
 }
@@ -929,7 +932,7 @@ void Notification::publish()
         d->hints.insert(HINT_OWNER, processName());
     }
 
-    setReplacesId(notificationManager()->Notify(appName(), d->replacesId, d->appIcon, d->summary, d->body,
+    setReplacesId(notificationManager()->Notify(appName(), d->replacesId, appIcon(), d->summary, d->body,
                                                 encodeActions(d->actions), d->hints, d->expireTimeout));
 }
 
@@ -1292,8 +1295,7 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
 
     This property is transmitted as the extension hint value "x-nemo-origin".
 
-    \deprecated
-    This property is deprecated.
+    \obsolete
 */
 /*!
     \property Notification::origin
@@ -1307,8 +1309,7 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
 
     This property is transmitted as the extension hint value "x-nemo-origin".
 
-    \deprecated
-    This property is deprecated.
+    \obsolete
 */
 QString Notification::origin() const
 {
@@ -1320,6 +1321,7 @@ void Notification::setOrigin(const QString &origin)
 {
     Q_D(Notification);
     if (origin != this->origin()) {
+        qWarning() << "Notification::origin property is deprecated";
         d->hints.insert(HINT_ORIGIN, origin);
         emit originChanged();
     }
@@ -1572,7 +1574,6 @@ QDBusArgument &operator<<(QDBusArgument &argument, const NotificationData &data)
     argument.beginStructure();
     argument << data.appName;
     argument << data.replacesId;
-    argument << data.appIcon;
     argument << data.summary;
     argument << data.body;
     argument << encodeActions(data.actions);
@@ -1589,7 +1590,6 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NotificationData 
     argument.beginStructure();
     argument >> data.appName;
     argument >> data.replacesId;
-    argument >> data.appIcon;
     argument >> data.summary;
     argument >> data.body;
     argument >> tempStringList;

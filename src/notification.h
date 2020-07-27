@@ -58,6 +58,7 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(QDateTime timestamp READ timestamp WRITE setTimestamp NOTIFY timestampChanged)
     Q_PROPERTY(QString previewSummary READ previewSummary WRITE setPreviewSummary RESET clearPreviewSummary NOTIFY previewSummaryChanged)
     Q_PROPERTY(QString previewBody READ previewBody WRITE setPreviewBody RESET clearPreviewBody NOTIFY previewBodyChanged)
+    Q_PROPERTY(QString subText READ subText WRITE setSubText NOTIFY subTextChanged)
     Q_PROPERTY(int itemCount READ itemCount WRITE setItemCount NOTIFY itemCountChanged)
     Q_PROPERTY(QString remoteDBusCallServiceName READ remoteDBusCallServiceName WRITE setRemoteDBusCallServiceName NOTIFY remoteDBusCallChanged)
     Q_PROPERTY(QString remoteDBusCallObjectPath READ remoteDBusCallObjectPath WRITE setRemoteDBusCallObjectPath NOTIFY remoteDBusCallChanged)
@@ -119,6 +120,9 @@ public:
     QString previewBody() const;
     void setPreviewBody(const QString &previewBody);
     void clearPreviewBody();
+
+    QString subText() const;
+    void setSubText(const QString &subText);
 
     int itemCount() const;
     void setItemCount(int itemCount);
@@ -182,6 +186,7 @@ signals:
     void iconChanged();
     void appIconChanged();
     void summaryChanged();
+    void subTextChanged();
     void bodyChanged();
     void urgencyChanged();
     void expireTimeoutChanged();

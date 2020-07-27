@@ -49,6 +49,7 @@ const char *HINT_TIMESTAMP = "x-nemo-timestamp";
 const char *HINT_ICON = "x-nemo-icon";
 const char *HINT_PREVIEW_BODY = "x-nemo-preview-body";
 const char *HINT_PREVIEW_SUMMARY = "x-nemo-preview-summary";
+const char *HINT_SUB_TEXT = "x-nemo-sub-text";
 const char *HINT_REMOTE_ACTION_PREFIX = "x-nemo-remote-action-";
 const char *HINT_REMOTE_ACTION_ICON_PREFIX = "x-nemo-remote-action-icon-";
 const char *HINT_ORIGIN = "x-nemo-origin";
@@ -906,6 +907,41 @@ void Notification::clearPreviewBody()
 }
 
 /*!
+    \qmlproperty string Notification::subText
+
+    Sub-text of the notification, if any.
+
+    This indicates some brief secondary information, such as the sender's email address in the
+    case of a "new email" notification.
+
+    This property is transmitted as the extension hint value "x-nemo-sub-text".
+ */
+/*!
+    \property Notification::subText
+
+    Sub-text of the notification, if any.
+
+    This can indicate some brief secondary information, such as the sender's email address in the
+    case of a "new email" notification.
+
+    This property is transmitted as the extension hint value "x-nemo-sub-text".
+ */
+QString Notification::subText() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_SUB_TEXT).toString();
+}
+
+void Notification::setSubText(const QString &subText)
+{
+    Q_D(Notification);
+    if (subText != this->subText()) {
+        d->hints.insert(HINT_SUB_TEXT, subText);
+        emit subTextChanged();
+    }
+}
+
+/*!
     \qmlproperty int Notification::itemCount
 
     The number of items represented by the notification.
@@ -1382,7 +1418,7 @@ void Notification::setOrigin(const QString &origin)
 {
     Q_D(Notification);
     if (origin != this->origin()) {
-        qWarning() << "Notification::origin property is deprecated";
+        qWarning() << "Notification sets deprecated origin property to" << origin << ", use subText instead";
         d->hints.insert(HINT_ORIGIN, origin);
         emit originChanged();
     }

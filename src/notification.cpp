@@ -36,6 +36,8 @@
 #include <QStringBuilder>
 #include <QDebug>
 
+#include <time.h>
+
 namespace {
 
 const char *HINT_CATEGORY = "category";
@@ -1535,10 +1537,13 @@ QVariant Notification::remoteAction(const QString &name, const QString &displayN
                                     const QString &method, const QVariantList &arguments)
 {
     QVariantMap action;
+    static quint32 autoActionNameCounter = 0;
 
-    if (!name.isEmpty()) {
-        action.insert(QStringLiteral("name"), name);
-    }
+    const QString &actionName = name.isEmpty()
+            ? QStringLiteral("action_%1_%2").arg(time(nullptr)).arg(++autoActionNameCounter)
+            : name;
+    action.insert(QStringLiteral("name"), actionName);
+
     if (!displayName.isEmpty()) {
         action.insert(QStringLiteral("displayName"), displayName);
     }

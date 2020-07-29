@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Vesa Halttunen <vesa.halttunen@jollamobile.com>
+ * Copyright (C) 2013 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -56,8 +56,9 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(Urgency urgency READ urgency WRITE setUrgency NOTIFY urgencyChanged)
     Q_PROPERTY(qint32 expireTimeout READ expireTimeout WRITE setExpireTimeout NOTIFY expireTimeoutChanged)
     Q_PROPERTY(QDateTime timestamp READ timestamp WRITE setTimestamp NOTIFY timestampChanged)
-    Q_PROPERTY(QString previewSummary READ previewSummary WRITE setPreviewSummary NOTIFY previewSummaryChanged)
-    Q_PROPERTY(QString previewBody READ previewBody WRITE setPreviewBody NOTIFY previewBodyChanged)
+    Q_PROPERTY(QString previewSummary READ previewSummary WRITE setPreviewSummary RESET clearPreviewSummary NOTIFY previewSummaryChanged)
+    Q_PROPERTY(QString previewBody READ previewBody WRITE setPreviewBody RESET clearPreviewBody NOTIFY previewBodyChanged)
+    Q_PROPERTY(QString subText READ subText WRITE setSubText NOTIFY subTextChanged)
     Q_PROPERTY(int itemCount READ itemCount WRITE setItemCount NOTIFY itemCountChanged)
     Q_PROPERTY(QString remoteDBusCallServiceName READ remoteDBusCallServiceName WRITE setRemoteDBusCallServiceName NOTIFY remoteDBusCallChanged)
     Q_PROPERTY(QString remoteDBusCallObjectPath READ remoteDBusCallObjectPath WRITE setRemoteDBusCallObjectPath NOTIFY remoteDBusCallChanged)
@@ -90,6 +91,7 @@ public:
     quint32 replacesId() const;
     void setReplacesId(quint32 id);
 
+    // Obsolete
     QString icon() const;
     void setIcon(const QString &icon);
 
@@ -113,14 +115,19 @@ public:
 
     QString previewSummary() const;
     void setPreviewSummary(const QString &previewSummary);
+    void clearPreviewSummary();
 
     QString previewBody() const;
     void setPreviewBody(const QString &previewBody);
+    void clearPreviewBody();
+
+    QString subText() const;
+    void setSubText(const QString &subText);
 
     int itemCount() const;
     void setItemCount(int itemCount);
 
-    // Deprecated 'remoteDBusCall...' functions:
+    // Obsoleted 'remoteDBusCall...' functions:
     QString remoteDBusCallServiceName() const;
     void setRemoteDBusCallServiceName(const QString &serviceName);
 
@@ -141,10 +148,11 @@ public:
     void setRemoteActions(const QVariantList &remoteActions);
     inline void setRemoteAction(const QVariant &remoteAction) { setRemoteActions(QVariantList() << remoteAction); }
 
-    // Deprecated
+    // Obsolete
     QString origin() const;
     void setOrigin(const QString &origin);
 
+    // Obsolete
     int maxContentLines() const;
     void setMaxContentLines(int max);
 
@@ -178,6 +186,7 @@ signals:
     void iconChanged();
     void appIconChanged();
     void summaryChanged();
+    void subTextChanged();
     void bodyChanged();
     void urgencyChanged();
     void expireTimeoutChanged();

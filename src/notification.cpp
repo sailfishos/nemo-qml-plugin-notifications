@@ -57,6 +57,7 @@ const char *HINT_OWNER = "x-nemo-owner";
 const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
 const char *DEFAULT_ACTION_NAME = "default";
 const char *HINT_PROGRESS = "x-nemo-progress";
+const char *HINT_SOUND_FILE = "sound-file";
 
 static inline QString processName() {
     // Defaults to the filename if not set
@@ -938,6 +939,34 @@ void Notification::setSubText(const QString &subText)
     if (subText != this->subText()) {
         d->hints.insert(HINT_SUB_TEXT, subText);
         emit subTextChanged();
+    }
+}
+/*!
+    \qmlproperty string Notification::sound
+
+    The file path of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-file".
+ */
+/*!
+    \property Notification::sound
+
+    The file path of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-file".
+ */
+QString Notification::sound() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_SOUND_FILE).toString();
+}
+
+void Notification::setSound(const QString &sound)
+{
+    Q_D(Notification);
+    if (sound != this->sound()) {
+        d->hints.insert(HINT_SOUND_FILE, sound);
+        emit soundChanged();
     }
 }
 

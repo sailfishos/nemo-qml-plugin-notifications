@@ -1014,10 +1014,11 @@ void Notification::publish()
 
     // Use the summary and body as fallback values for previewSummary and previewBody, unless the
     // preview values have explicitly been reset to invalid variants.
-    auto setDefaultPreview = [d](const QString &hint, const QString &defaultValue) -> void {
-        auto it = d->hints.find(hint);
-        if (it == d->hints.end()) {
-            d->hints.insert(hint, defaultValue);
+    QVariantHash hints = d->hints;
+    auto setDefaultPreview = [&hints](const QString &hint, const QString &defaultValue) -> void {
+        auto it = hints.find(hint);
+        if (it == hints.end()) {
+            hints.insert(hint, defaultValue);
         } else if (!it.value().isValid()) {
             // Set an empty string to indicate that there is no preview text. The value cannot
             // be invalid as QDBusVariant serialization expects valid values.
@@ -1029,7 +1030,7 @@ void Notification::publish()
     setDefaultPreview(HINT_PREVIEW_BODY, d->body);
 
     setReplacesId(notificationManager()->Notify(appName(), d->replacesId, appIcon(), d->summary, d->body,
-                                                encodeActions(d->actions), d->hints, d->expireTimeout));
+                                                encodeActions(d->actions), hints, d->expireTimeout));
 }
 
 

@@ -33,6 +33,7 @@
 #include "notification.h"
 #include "notification_p.h"
 
+#include <QImage>
 #include <QStringBuilder>
 #include <QDebug>
 
@@ -46,7 +47,6 @@ const char *HINT_TRANSIENT = "transient";
 const char *HINT_APP_ICON = "app_icon";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
-const char *HINT_ICON = "x-nemo-icon";
 const char *HINT_PREVIEW_BODY = "x-nemo-preview-body";
 const char *HINT_PREVIEW_SUMMARY = "x-nemo-preview-summary";
 const char *HINT_SUB_TEXT = "x-nemo-sub-text";
@@ -57,6 +57,48 @@ const char *HINT_OWNER = "x-nemo-owner";
 const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
 const char *DEFAULT_ACTION_NAME = "default";
 const char *HINT_PROGRESS = "x-nemo-progress";
+const char *HINT_SOUND_FILE = "sound-file";
+const char *HINT_IMAGE_DATA = "image-data";
+const char *HINT_IMAGE_PATH = "image-path";
+
+class NotificationImage : public QImage
+{
+public:
+    NotificationImage() = default;
+    NotificationImage(const QImage &image)
+        : QImage(image.format() == QImage::Format_RGB32 || image.format() == QImage::Format_ARGB32
+                 ? QImage(image)
+                 : image.convertToFormat(image.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32))
+    {
+    };
+};
+
+// Marshall the MyStructure data into a D-Bus argument
+QDBusArgument &operator <<(QDBusArgument &argument, const NotificationImage &image)
+{
+    argument.beginStructure();
+    argument << image.width();
+    argument << image.height();
+    argument << image.bytesPerLine();
+    argument << image.hasAlphaChannel();
+    argument << 8;
+    argument << 4;
+    argument << QByteArray(reinterpret_cast<const char *>(image.bits()), image.byteCount());
+    argument.endStructure();
+
+    return argument;
+}
+
+const QDBusArgument &operator >>(const QDBusArgument &argument, NotificationImage &)
+{
+    return argument;
+}
+
+}
+
+Q_DECLARE_METATYPE(NotificationImage)
+
+namespace {
 
 static inline QString processName() {
     // Defaults to the filename if not set
@@ -71,6 +113,7 @@ NotificationManagerProxy *notificationManager()
     if (!notificationManagerProxyInstance.exists()) {
         qDBusRegisterMetaType<NotificationData>();
         qDBusRegisterMetaType<QList<NotificationData> >();
+        qDBusRegisterMetaType<NotificationImage>();
     }
 
     return notificationManagerProxyInstance();
@@ -524,9 +567,9 @@ void Notification::setAppName(const QString &appName)
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
 
-    This property is transmitted as the extension hint value "x-nemo-icon".
+    Alternatively the iconData property may be used to set a decoded image.
 
-    \obsolete
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-path".
  */
 /*!
     \property Notification::icon
@@ -534,14 +577,16 @@ void Notification::setAppName(const QString &appName)
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
 
-    This property is transmitted as the extension hint value "x-nemo-icon".
+    Alternatively the iconData property may be used to set a decoded image.
 
-    \obsolete
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-path".
+
+    \sa iconData
  */
 QString Notification::icon() const
 {
     Q_D(const Notification);
-    return d->hints.value(HINT_ICON).toString();
+    return d->hints.value(HINT_IMAGE_PATH).toString();
 }
 
 void Notification::setIcon(const QString &icon)
@@ -549,7 +594,7 @@ void Notification::setIcon(const QString &icon)
     Q_D(Notification);
     if (icon != this->icon()) {
         qWarning() << "Notification sets deprecated icon property to" << icon << ", use appIcon instead";
-        d->hints.insert(HINT_ICON, icon);
+        d->hints.insert(HINT_IMAGE_PATH, icon);
         emit iconChanged();
     }
 }
@@ -938,6 +983,73 @@ void Notification::setSubText(const QString &subText)
     if (subText != this->subText()) {
         d->hints.insert(HINT_SUB_TEXT, subText);
         emit subTextChanged();
+    }
+}
+
+/*!
+    \qmlproperty string Notification::sound
+
+    The file path of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-file".
+ */
+/*!
+    \property Notification::sound
+
+    The file path of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-file".
+ */
+QString Notification::sound() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_SOUND_FILE).toString();
+}
+
+void Notification::setSound(const QString &sound)
+{
+    Q_D(Notification);
+    if (sound != this->sound()) {
+        d->hints.insert(HINT_SOUND_FILE, sound);
+        emit soundChanged();
+    }
+}
+
+/*!
+    \qmlproperty image Notification::iconData
+
+    An image to be shown on the notification.
+
+    Alternatively the \l icon property may be used to a set the URI of a persistent image file
+    or a theme identifier for the icon.
+
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-data".
+ */
+
+/*!
+    \property Notification::iconData
+
+    An image to be shown on the notification.
+
+    Alternatively the \l icon property may be used to a set the URI of a persistent image file
+    or a theme identifier for the icon.
+
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-data".
+
+    \sa icon
+ */
+QImage Notification::iconData() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_IMAGE_DATA).value<NotificationImage>();
+}
+
+void Notification::setIconData(const QImage &image)
+{
+    Q_D(Notification);
+    if (image != this->iconData()) {
+        d->hints.insert(HINT_IMAGE_DATA, QVariant::fromValue(NotificationImage(image)));
+        emit iconDataChanged();
     }
 }
 
@@ -1703,3 +1815,5 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NotificationData 
 
     return argument;
 }
+
+#include "moc_notification.cpp"

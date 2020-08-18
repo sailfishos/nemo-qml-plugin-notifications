@@ -4,7 +4,6 @@ TEMPLATE = lib
 TARGET = nemonotifications-qt5
 CONFIG += qt hide_symbols create_pc create_prl
 QT += dbus
-QT -= gui
 
 SOURCES += notification.cpp \
     notificationmanagerproxy.cpp

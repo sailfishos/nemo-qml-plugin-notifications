@@ -593,7 +593,6 @@ void Notification::setIcon(const QString &icon)
 {
     Q_D(Notification);
     if (icon != this->icon()) {
-        qWarning() << "Notification sets deprecated icon property to" << icon << ", use appIcon instead";
         d->hints.insert(HINT_IMAGE_PATH, icon);
         emit iconChanged();
     }

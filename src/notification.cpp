@@ -1194,10 +1194,31 @@ void Notification::close()
 
     \sa remoteActions()
  */
+
+/*!
+    \qmlsignal Notification::actionInvoked(string name)
+
+    Emitted when a notification action is activated by the user. \a name indicates the name of the invoked action.
+
+    Handling the \c actionInvoked signal is only effective if the process is running when the
+    user activates the notification, which may occur long after the notification is
+    published.
+ */
+/*!
+    \fn void Notification::actionInvoked(const QString &name)
+
+    Emitted when a notification action is activated by the user. \a name indicates the name of the invoked action.
+
+    Handling the \c actionInvoked signal is only effective if the process is running when the
+    user activates the notification, which may occur long after the notification is
+    published.
+ */
 void Notification::checkActionInvoked(uint id, QString actionKey)
 {
     Q_D(Notification);
     if (id == d->replacesId) {
+        emit actionInvoked(actionKey);
+
         if (actionKey == DEFAULT_ACTION_NAME) {
             emit clicked();
         }

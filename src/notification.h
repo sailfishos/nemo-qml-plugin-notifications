@@ -186,6 +186,7 @@ public:
 
 signals:
     void clicked();
+    void actionInvoked(const QString &name);
     void closed(uint reason);
     void categoryChanged();
     void appNameChanged();

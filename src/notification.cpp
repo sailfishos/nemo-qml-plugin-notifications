@@ -196,9 +196,10 @@ QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const
             const QVariantList arguments = vm["arguments"].value<QVariantList>();
             const QString icon = vm["icon"].value<QString>();
 
+            const NotificationData::ActionInfo actionInfo = { actionName, displayName };
+            rv.first.append(actionInfo);
+
             if (!service.isEmpty() && !path.isEmpty() && !iface.isEmpty() && !method.isEmpty()) {
-                const NotificationData::ActionInfo actionInfo = { actionName, displayName };
-                rv.first.append(actionInfo);
                 rv.second.insert(QString(HINT_REMOTE_ACTION_PREFIX) + actionName, encodeDBusCall(service, path, iface, method, arguments));
                 if (!icon.isEmpty()) {
                     rv.second.insert(QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName, icon);
@@ -1108,11 +1109,14 @@ void Notification::publish()
     // Validate the actions associated with the notification
     Q_FOREACH (const QVariant &action, d->remoteActions) {
         const QVariantMap &vm = action.value<QVariantMap>();
+        int callbackParameters = 0;
+        if (!vm["service"].value<QString>().isEmpty()) callbackParameters++;
+        if (!vm["path"].value<QString>().isEmpty()) callbackParameters++;
+        if (!vm["iface"].value<QString>().isEmpty()) callbackParameters++;
+        if (!vm["method"].value<QString>().isEmpty()) callbackParameters++;
+
         if (vm["name"].value<QString>().isEmpty()
-                || vm["service"].value<QString>().isEmpty()
-                || vm["path"].value<QString>().isEmpty()
-                || vm["iface"].value<QString>().isEmpty()
-                || vm["method"].value<QString>().isEmpty()) {
+                || (callbackParameters != 0 && callbackParameters != 4)) {
             qWarning() << "Invalid remote action specification:" << action;
         }
     }

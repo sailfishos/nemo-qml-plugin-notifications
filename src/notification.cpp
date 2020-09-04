@@ -1017,7 +1017,7 @@ void Notification::setSound(const QString &sound)
 /*!
     \qmlproperty image Notification::iconData
 
-    An image to be shown on the notification.
+    An image to be shown on the notification. N.B. this requires QImage typed value, not compatible with Image or such.
 
     Alternatively the \l icon property may be used to a set the URI of a persistent image file
     or a theme identifier for the icon.

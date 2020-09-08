@@ -181,11 +181,12 @@ public:
     Q_INVOKABLE static QList<QObject*> notificationsByCategory(const QString &category);
 
     Q_INVOKABLE static QVariant remoteAction(const QString &name, const QString &displayName,
-                                             const QString &service, const QString &path, const QString &iface,
-                                             const QString &method, const QVariantList &arguments = QVariantList());
+                                             const QString &service = QString(), const QString &path = QString(), const QString &iface = QString(),
+                                             const QString &method = QString(), const QVariantList &arguments = QVariantList());
 
 signals:
     void clicked();
+    void actionInvoked(const QString &name);
     void closed(uint reason);
     void categoryChanged();
     void appNameChanged();

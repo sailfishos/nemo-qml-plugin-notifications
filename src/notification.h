@@ -68,10 +68,11 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(QString remoteDBusCallMethodName READ remoteDBusCallMethodName WRITE setRemoteDBusCallMethodName NOTIFY remoteDBusCallChanged)
     Q_PROPERTY(QVariantList remoteDBusCallArguments READ remoteDBusCallArguments WRITE setRemoteDBusCallArguments NOTIFY remoteDBusCallChanged)
     Q_PROPERTY(QVariantList remoteActions READ remoteActions WRITE setRemoteActions NOTIFY remoteActionsChanged)
-    Q_PROPERTY(QString origin READ origin WRITE setOrigin NOTIFY originChanged)
-    Q_PROPERTY(int maxContentLines READ maxContentLines WRITE setMaxContentLines NOTIFY maxContentLinesChanged)
     Q_PROPERTY(bool isTransient READ isTransient WRITE setIsTransient NOTIFY isTransientChanged)
     Q_PROPERTY(QVariant progress READ progress WRITE setProgress RESET resetProgress NOTIFY progressChanged)
+    // deprecated properties
+    Q_PROPERTY(QString origin READ origin WRITE setOrigin NOTIFY originChanged)
+    Q_PROPERTY(int maxContentLines READ maxContentLines WRITE setMaxContentLines NOTIFY maxContentLinesChanged)
     Q_ENUMS(Urgency)
     Q_ENUMS(CloseReason)
     Q_ENUMS(Progress)

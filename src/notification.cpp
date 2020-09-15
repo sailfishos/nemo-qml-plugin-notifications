@@ -1643,13 +1643,13 @@ void Notification::setIsTransient(bool value)
     \qmlproperty var Notification::progress
 
     Property containing the progress the notification represent. Value can be undefined for no progress,
-    Notification.ProgressIndeterminate for indetermiante state or real between 0.0 and 1.0 to represent progress percentage.
+    Notification.ProgressIndeterminate for indeterminate state or real between 0.0 and 1.0 to represent progress percentage.
 */
 /*!
     \property Notification::progress
 
     Property containing the progress the notification represent. Value can be undefined for no progress,
-    Notification::ProgressIndeterminate for indetermiante state or real between 0.0 and 1.0 to represent progress percentage.
+    Notification::ProgressIndeterminate for indeterminate state or real between 0.0 and 1.0 to represent progress percentage.
 */
 
 QVariant Notification::progress() const
@@ -1661,11 +1661,15 @@ QVariant Notification::progress() const
 void Notification::setProgress(const QVariant &value)
 {
     Q_D(Notification);
+
     if (value.isNull()) {
         resetProgress();
-    } else if (value != this->progress()) {
-        d->hints.insert(HINT_PROGRESS, value);
-        emit progressChanged();
+    } else {
+        QVariant filteredValue(value.toDouble());
+        if (filteredValue != this->progress()) {
+            d->hints.insert(HINT_PROGRESS, filteredValue);
+            emit progressChanged();
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-system($$[QT_INSTALL_BINS]/qdbusxml2cpp org.freedesktop.Notifications.xml -p notificationmanagerproxy -c NotificationManagerProxy -i notification_p.h)
+system($$[QT_HOST_BINS]/qdbusxml2cpp org.freedesktop.Notifications.xml -p notificationmanagerproxy -c NotificationManagerProxy -i notification_p.h)
 
 TEMPLATE = lib
 TARGET = nemonotifications-qt5

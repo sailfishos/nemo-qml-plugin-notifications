@@ -37,6 +37,7 @@
 #include <QDateTime>
 #include <QVariantHash>
 #include <QDBusArgument>
+#include <QSharedPointer>
 
 struct NotificationData
 {
@@ -53,6 +54,16 @@ struct NotificationData
     QList<ActionInfo> actions;
     QVariantHash hints;
     qint32 expireTimeout = -1;
+};
+
+class NotificationManagerProxy;
+
+class Q_DECL_EXPORT NotificationConnectionManager {
+public:
+    QSharedPointer<NotificationManagerProxy> proxy;
+    QSharedPointer<QDBusConnection> dBusConnection;
+    // For platforms where the Notifications interface is hosted on a p2p bus
+    static bool useDBusConnection(const QDBusConnection &bus);
 };
 
 Q_DECL_EXPORT QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);

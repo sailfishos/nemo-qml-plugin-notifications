@@ -20,7 +20,7 @@ headers.files = notification.h notification_p.h
 headers.path = /usr/include/nemonotifications-qt5
 
 QMAKE_PKGCONFIG_NAME = lib$$TARGET
-QMAKE_PKGCONFIG_DESCRIPTION = Convenience library or sending notifications
+QMAKE_PKGCONFIG_DESCRIPTION = Convenience library for sending notifications
 QMAKE_PKGCONFIG_LIBDIR = $$target.path
 QMAKE_PKGCONFIG_INCDIR = $$headers.path
 QMAKE_PKGCONFIG_DESTDIR = pkgconfig

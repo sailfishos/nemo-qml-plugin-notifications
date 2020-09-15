@@ -39,6 +39,9 @@
 
 #include <time.h>
 
+#define DBUS_SERVICE "org.freedesktop.Notifications"
+#define DBUS_PATH "/org/freedesktop/Notifications"
+
 namespace {
 
 const char *HINT_CATEGORY = "category";
@@ -104,18 +107,24 @@ static inline QString processName() {
     return QCoreApplication::applicationName();
 }
 
-//! A proxy for accessing the notification manager
-Q_GLOBAL_STATIC_WITH_ARGS(NotificationManagerProxy, notificationManagerProxyInstance, ("org.freedesktop.Notifications", "/org/freedesktop/Notifications", QDBusConnection::sessionBus()))
+Q_GLOBAL_STATIC(NotificationConnectionManager, connMgr)
 
 NotificationManagerProxy *notificationManager()
 {
-    if (!notificationManagerProxyInstance.exists()) {
+    if (connMgr()->proxy.isNull()) {
         qDBusRegisterMetaType<NotificationData>();
         qDBusRegisterMetaType<QList<NotificationData> >();
         qDBusRegisterMetaType<NotificationImage>();
+        QString serviceName(DBUS_SERVICE);
+        QDBusConnection *conn = connMgr()->dBusConnection.data();
+        if (conn && conn->isConnected() && conn->baseService().isEmpty()) {
+            // p2p connection - no service name
+            serviceName.clear();
+        }
+        connMgr()->proxy.reset(new NotificationManagerProxy(serviceName, DBUS_PATH, 
+                        conn ? *conn : QDBusConnection::sessionBus()));
     }
-
-    return notificationManagerProxyInstance();
+    return connMgr()->proxy.data();
 }
 
 QString encodeDBusCall(const QString &service, const QString &path, const QString &iface, const QString &method, const QVariantList &arguments)
@@ -1826,6 +1835,21 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NotificationData 
     data.actions = decodeActions(tempStringList);
 
     return argument;
+}
+
+bool NotificationConnectionManager::useDBusConnection(const QDBusConnection &conn)
+{
+    if (connMgr()->proxy.isNull()) {
+        if (conn.isConnected()) {
+            connMgr()->dBusConnection.reset(new QDBusConnection(conn));
+            return true;
+        } else {
+            qWarning() << "Supplied DBus connection is not connected.";
+        }
+    } else {
+        qWarning() << "Cannot override DBus connection - notifications already exist.";
+    }
+    return false;
 }
 
 #include "moc_notification.cpp"

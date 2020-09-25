@@ -44,7 +44,6 @@ namespace {
 const char *HINT_CATEGORY = "category";
 const char *HINT_URGENCY = "urgency";
 const char *HINT_TRANSIENT = "transient";
-const char *HINT_APP_ICON = "app_icon";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
 const char *HINT_PREVIEW_BODY = "x-nemo-preview-body";
@@ -656,14 +655,14 @@ void Notification::setReplacesId(uint id)
 QString Notification::appIcon() const
 {
     Q_D(const Notification);
-    return d->hints.value(HINT_APP_ICON).toString();
+    return d->appIcon;
 }
 
 void Notification::setAppIcon(const QString &appIcon)
 {
     Q_D(Notification);
     if (appIcon != this->appIcon()) {
-        d->hints.insert(HINT_APP_ICON, appIcon);
+        d->appIcon = appIcon;
         emit appIconChanged();
     }
 }
@@ -1829,6 +1828,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const NotificationData &data)
     argument.beginStructure();
     argument << data.appName;
     argument << data.replacesId;
+    argument << data.appIcon;
     argument << data.summary;
     argument << data.body;
     argument << encodeActions(data.actions);
@@ -1845,6 +1845,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NotificationData 
     argument.beginStructure();
     argument >> data.appName;
     argument >> data.replacesId;
+    argument >> data.appIcon;
     argument >> data.summary;
     argument >> data.body;
     argument >> tempStringList;

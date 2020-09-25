@@ -350,7 +350,6 @@ class NotificationPrivate : public NotificationData
 
             summary: "Notification summary"
             body: "Notification body"
-            onClicked: console.log("Clicked")
         }
         text: "Application notification" + (notification.replacesId ? " ID:" + notification.replacesId : "")
         onClicked: notification.publish()

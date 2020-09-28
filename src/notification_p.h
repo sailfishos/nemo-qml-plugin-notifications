@@ -47,7 +47,7 @@ struct NotificationData
 
     QString appName;
     quint32 replacesId = 0;
-    QString appIcon;    // unused, kept for binary compatibility with data serialization
+    QString appIcon;
     QString summary;
     QString body;
     QList<ActionInfo> actions;

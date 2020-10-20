@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Vesa Halttunen <vesa.halttunen@jollamobile.com>
+ * Copyright (C) 2013 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -33,7 +33,11 @@
 #include "notification.h"
 #include "notification_p.h"
 
+#include <QImage>
 #include <QStringBuilder>
+#include <QDebug>
+
+#include <time.h>
 
 namespace {
 
@@ -42,9 +46,9 @@ const char *HINT_URGENCY = "urgency";
 const char *HINT_TRANSIENT = "transient";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
-const char *HINT_ICON = "x-nemo-icon";
 const char *HINT_PREVIEW_BODY = "x-nemo-preview-body";
 const char *HINT_PREVIEW_SUMMARY = "x-nemo-preview-summary";
+const char *HINT_SUB_TEXT = "x-nemo-sub-text";
 const char *HINT_REMOTE_ACTION_PREFIX = "x-nemo-remote-action-";
 const char *HINT_REMOTE_ACTION_ICON_PREFIX = "x-nemo-remote-action-icon-";
 const char *HINT_ORIGIN = "x-nemo-origin";
@@ -52,6 +56,48 @@ const char *HINT_OWNER = "x-nemo-owner";
 const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
 const char *DEFAULT_ACTION_NAME = "default";
 const char *HINT_PROGRESS = "x-nemo-progress";
+const char *HINT_SOUND_FILE = "sound-file";
+const char *HINT_IMAGE_DATA = "image-data";
+const char *HINT_IMAGE_PATH = "image-path";
+
+class NotificationImage : public QImage
+{
+public:
+    NotificationImage() = default;
+    NotificationImage(const QImage &image)
+        : QImage(image.format() == QImage::Format_RGB32 || image.format() == QImage::Format_ARGB32
+                 ? QImage(image)
+                 : image.convertToFormat(image.hasAlphaChannel() ? QImage::Format_ARGB32 : QImage::Format_RGB32))
+    {
+    };
+};
+
+// Marshall the MyStructure data into a D-Bus argument
+QDBusArgument &operator <<(QDBusArgument &argument, const NotificationImage &image)
+{
+    argument.beginStructure();
+    argument << image.width();
+    argument << image.height();
+    argument << image.bytesPerLine();
+    argument << image.hasAlphaChannel();
+    argument << 8;
+    argument << 4;
+    argument << QByteArray(reinterpret_cast<const char *>(image.bits()), image.byteCount());
+    argument.endStructure();
+
+    return argument;
+}
+
+const QDBusArgument &operator >>(const QDBusArgument &argument, NotificationImage &)
+{
+    return argument;
+}
+
+}
+
+Q_DECLARE_METATYPE(NotificationImage)
+
+namespace {
 
 static inline QString processName() {
     // Defaults to the filename if not set
@@ -66,6 +112,7 @@ NotificationManagerProxy *notificationManager()
     if (!notificationManagerProxyInstance.exists()) {
         qDBusRegisterMetaType<NotificationData>();
         qDBusRegisterMetaType<QList<NotificationData> >();
+        qDBusRegisterMetaType<NotificationImage>();
     }
 
     return notificationManagerProxyInstance();
@@ -148,9 +195,10 @@ QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const
             const QVariantList arguments = vm["arguments"].value<QVariantList>();
             const QString icon = vm["icon"].value<QString>();
 
+            const NotificationData::ActionInfo actionInfo = { actionName, displayName };
+            rv.first.append(actionInfo);
+
             if (!service.isEmpty() && !path.isEmpty() && !iface.isEmpty() && !method.isEmpty()) {
-                const NotificationData::ActionInfo actionInfo = { actionName, displayName };
-                rv.first.append(actionInfo);
                 rv.second.insert(QString(HINT_REMOTE_ACTION_PREFIX) + actionName, encodeDBusCall(service, path, iface, method, arguments));
                 if (!icon.isEmpty()) {
                     rv.second.insert(QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName, icon);
@@ -215,6 +263,20 @@ QVariantList decodeActionHints(const QList<NotificationData::ActionInfo> &action
     return rv;
 }
 
+bool resetPreviewValue(QVariantHash *hints, const QString &hint)
+{
+    auto it = hints->find(hint);
+    if (it == hints->end()) {
+        hints->insert(hint, QVariant());
+        return true;
+    } else if (it.value().isValid()) {
+        it.value() = QVariant();
+        return true;
+    }
+
+    return false;
+}
+
 }
 
 class NotificationPrivate : public NotificationData
@@ -266,7 +328,7 @@ class NotificationPrivate : public NotificationData
     {Desktop Notifications Specification} as implemented in Nemo.
 
     This type allows clients to create instances of notifications, which
-    can be used to communicate to the Lipstick Notification Manager via
+    can be used to communicate to the home screen's Notification Manager via
     D-Bus.  This simplifies the process of creating, listing and closing
     notifications, since the necessary communications are handled by the
     type.
@@ -274,7 +336,7 @@ class NotificationPrivate : public NotificationData
     Notification content can be specified by setting the various properties
     on an instance of the Notification type, or can be handled by providing
     a category, whose properties are automatically applied
-    to matching notifications by the Lipstick Notification Manager. Properties
+    to matching notifications by the home screen's Notification Manager. Properties
     set in the notification instance will not be overwritten by values
     listed in the category.
 
@@ -287,7 +349,6 @@ class NotificationPrivate : public NotificationData
 
             summary: "Notification summary"
             body: "Notification body"
-            onClicked: console.log("Clicked")
         }
         text: "Application notification" + (notification.replacesId ? " ID:" + notification.replacesId : "")
         onClicked: notification.publish()
@@ -351,8 +412,7 @@ class NotificationPrivate : public NotificationData
 
     In this case, the notification includes a specification for
     'remote actions', which are D-Bus commands that the notification
-    manager may permit the user to invoke. (Note that Lipstick currently
-    supports invoking only the remote action named "default"). When
+    manager may permit the user to invoke. When
     an action is invoked on the notification, the corresponding D-Bus
     command is formulated and invoked, which allows the application
     to be launched to handled the notification action, if required.
@@ -370,7 +430,7 @@ class NotificationPrivate : public NotificationData
     {Desktop Notifications Specification} as implemented in Nemo.
 
     This class allows clients to create instances of notifications, which
-    can be used to communicate to the Lipstick Notification Manager via
+    can be used to communicate to the home screen's Notification Manager via
     D-Bus.  This simplifies the process of creating, listing and closing
     notifications, since the necessary communications are handled by the
     class.
@@ -505,9 +565,9 @@ void Notification::setAppName(const QString &appName)
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
 
-    This might take precedence over \l appIcon depending on platform implementation.
+    Alternatively the iconData property may be used to set a decoded image.
 
-    This property is transmitted as the extension hint value "x-nemo-icon".
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-path".
  */
 /*!
     \property Notification::icon
@@ -515,21 +575,23 @@ void Notification::setAppName(const QString &appName)
     Icon of the notication. The value can be a URI, an absolute filesystem path,
     or a token to be interpreted by the theme image provider.
 
-    This might take precedence over \l appIcon depending on platform implementation.
+    Alternatively the iconData property may be used to set a decoded image.
 
-    This property is transmitted as the extension hint value "x-nemo-icon".
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-path".
+
+    \sa iconData
  */
 QString Notification::icon() const
 {
     Q_D(const Notification);
-    return d->hints.value(HINT_ICON).toString();
+    return d->hints.value(HINT_IMAGE_PATH).toString();
 }
 
 void Notification::setIcon(const QString &icon)
 {
     Q_D(Notification);
     if (icon != this->icon()) {
-        d->hints.insert(HINT_ICON, icon);
+        d->hints.insert(HINT_IMAGE_PATH, icon);
         emit iconChanged();
     }
 }
@@ -789,8 +851,11 @@ void Notification::setTimestamp(const QDateTime &timestamp)
 
     Summary text to be shown in the preview banner for the notification, if any.
 
-    If \c previewSummary or \l previewBody are specified, a preview of the notification
-    will be generated by Lipstick at publication (unless the Notification Manager chooses
+    If this is not set (and has not been set to \c undefined) it will automatically be set to the
+    \l summary value when the notification is published.
+
+    When the \l previewSummary or \c previewBody is specified, a preview of the notification
+    will be generated by home screen at publication (unless the Notification Manager chooses
     to suppress the preview).
 
     This property is transmitted as the extension hint value "x-nemo-preview-summary".
@@ -800,8 +865,11 @@ void Notification::setTimestamp(const QDateTime &timestamp)
 
     Summary text to be shown in the preview banner for the notification, if any.
 
-    If \c previewSummary or \l previewBody are specified, a preview of the notification
-    will be generated by Lipstick at publication (unless the Notification Manager chooses
+    If this is not set (and has not been reset with \l clearPreviewSummary) it will automatically be set to the
+    \l summary value when the notification is published.
+
+    When the \l previewSummary or \c previewBody is specified, a preview of the notification
+    will be generated by home screen at publication (unless the Notification Manager chooses
     to suppress the preview).
 
     This property is transmitted as the extension hint value "x-nemo-preview-summary".
@@ -821,13 +889,24 @@ void Notification::setPreviewSummary(const QString &previewSummary)
     }
 }
 
+void Notification::clearPreviewSummary()
+{
+    Q_D(Notification);
+    if (resetPreviewValue(&d->hints, HINT_PREVIEW_SUMMARY)) {
+        emit previewSummaryChanged();
+    }
+}
+
 /*!
     \qmlproperty string Notification::previewBody
 
     Body text to be shown in the preview banner for the notification, if any.
 
-    If \l previewSummary or \c previewBody are specified, a preview of the notification
-    will be generated by Lipstick at publication (unless the Notification Manager chooses
+    If this is not set (and has not been set to \c undefined) it will automatically be set to the
+    \l body value when the notification is published.
+
+    When the \l previewSummary or \c previewBody is specified, a preview of the notification
+    will be generated by home screen at publication (unless the Notification Manager chooses
     to suppress the preview).
 
     This property is transmitted as the extension hint value "x-nemo-preview-body".
@@ -837,8 +916,11 @@ void Notification::setPreviewSummary(const QString &previewSummary)
 
     Body text to be shown in the preview banner for the notification, if any.
 
-    If \l previewSummary or \c previewBody are specified, a preview of the notification
-    will be generated by Lipstick at publication (unless the Notification Manager chooses
+    If this is not set (and has not been reset with \l clearPreviewBody) it will automatically be set to the
+    \l body value when the notification is published.
+
+    When the \l previewSummary or \c previewBody is specified, a preview of the notification
+    will be generated by home screen at publication (unless the Notification Manager chooses
     to suppress the preview).
 
     This property is transmitted as the extension hint value "x-nemo-preview-body".
@@ -855,6 +937,116 @@ void Notification::setPreviewBody(const QString &previewBody)
     if (previewBody != this->previewBody()) {
         d->hints.insert(HINT_PREVIEW_BODY, previewBody);
         emit previewBodyChanged();
+    }
+}
+
+void Notification::clearPreviewBody()
+{
+    Q_D(Notification);
+    if (resetPreviewValue(&d->hints, HINT_PREVIEW_BODY)) {
+        emit previewBodyChanged();
+    }
+}
+
+/*!
+    \qmlproperty string Notification::subText
+
+    Sub-text of the notification, if any.
+
+    This indicates some brief secondary information, such as the sender's email address in the
+    case of a "new email" notification.
+
+    This property is transmitted as the extension hint value "x-nemo-sub-text".
+ */
+/*!
+    \property Notification::subText
+
+    Sub-text of the notification, if any.
+
+    This can indicate some brief secondary information, such as the sender's email address in the
+    case of a "new email" notification.
+
+    This property is transmitted as the extension hint value "x-nemo-sub-text".
+ */
+QString Notification::subText() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_SUB_TEXT).toString();
+}
+
+void Notification::setSubText(const QString &subText)
+{
+    Q_D(Notification);
+    if (subText != this->subText()) {
+        d->hints.insert(HINT_SUB_TEXT, subText);
+        emit subTextChanged();
+    }
+}
+
+/*!
+    \qmlproperty string Notification::sound
+
+    The file path of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-file".
+ */
+/*!
+    \property Notification::sound
+
+    The file path of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-file".
+ */
+QString Notification::sound() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_SOUND_FILE).toString();
+}
+
+void Notification::setSound(const QString &sound)
+{
+    Q_D(Notification);
+    if (sound != this->sound()) {
+        d->hints.insert(HINT_SOUND_FILE, sound);
+        emit soundChanged();
+    }
+}
+
+/*!
+    \qmlproperty image Notification::iconData
+
+    An image to be shown on the notification. N.B. this requires QImage typed value, not compatible with Image or such.
+
+    Alternatively the \l icon property may be used to a set the URI of a persistent image file
+    or a theme identifier for the icon.
+
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-data".
+ */
+
+/*!
+    \property Notification::iconData
+
+    An image to be shown on the notification.
+
+    Alternatively the \l icon property may be used to a set the URI of a persistent image file
+    or a theme identifier for the icon.
+
+    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-data".
+
+    \sa icon
+ */
+QImage Notification::iconData() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_IMAGE_DATA).value<NotificationImage>();
+}
+
+void Notification::setIconData(const QImage &image)
+{
+    Q_D(Notification);
+    if (image != this->iconData()) {
+        d->hints.insert(HINT_IMAGE_DATA, QVariant::fromValue(NotificationImage(image)));
+        emit iconDataChanged();
     }
 }
 
@@ -914,11 +1106,14 @@ void Notification::publish()
     // Validate the actions associated with the notification
     Q_FOREACH (const QVariant &action, d->remoteActions) {
         const QVariantMap &vm = action.value<QVariantMap>();
+        int callbackParameters = 0;
+        if (!vm["service"].value<QString>().isEmpty()) callbackParameters++;
+        if (!vm["path"].value<QString>().isEmpty()) callbackParameters++;
+        if (!vm["iface"].value<QString>().isEmpty()) callbackParameters++;
+        if (!vm["method"].value<QString>().isEmpty()) callbackParameters++;
+
         if (vm["name"].value<QString>().isEmpty()
-                || vm["service"].value<QString>().isEmpty()
-                || vm["path"].value<QString>().isEmpty()
-                || vm["iface"].value<QString>().isEmpty()
-                || vm["method"].value<QString>().isEmpty()) {
+                || (callbackParameters != 0 && callbackParameters != 4)) {
             qWarning() << "Invalid remote action specification:" << action;
         }
     }
@@ -929,9 +1124,27 @@ void Notification::publish()
         d->hints.insert(HINT_OWNER, processName());
     }
 
-    setReplacesId(notificationManager()->Notify(appName(), d->replacesId, d->appIcon, d->summary, d->body,
-                                                encodeActions(d->actions), d->hints, d->expireTimeout));
+    // Use the summary and body as fallback values for previewSummary and previewBody, unless the
+    // preview values have explicitly been reset to invalid variants.
+    QVariantHash hints = d->hints;
+    auto setDefaultPreview = [&hints](const QString &hint, const QString &defaultValue) -> void {
+        auto it = hints.find(hint);
+        if (it == hints.end()) {
+            hints.insert(hint, defaultValue);
+        } else if (!it.value().isValid()) {
+            // Set an empty string to indicate that there is no preview text. The value cannot
+            // be invalid as QDBusVariant serialization expects valid values.
+            it.value() = QString();
+        }
+    };
+
+    setDefaultPreview(HINT_PREVIEW_SUMMARY, d->summary);
+    setDefaultPreview(HINT_PREVIEW_BODY, d->body);
+
+    setReplacesId(notificationManager()->Notify(appName(), d->replacesId, appIcon(), d->summary, d->body,
+                                                encodeActions(d->actions), hints, d->expireTimeout));
 }
+
 
 /*!
     \qmlmethod void Notification::close()
@@ -962,6 +1175,7 @@ void Notification::close()
     published. A more robust solution is to register a 'remote action' with the
     Notification Manager, so that a handler can be started running and invoked
     to service the request.
+    NB registering a D-Bus autostarted service might not be available for all the applications.
 
     \sa Notification::remoteActions
 */
@@ -978,10 +1192,31 @@ void Notification::close()
 
     \sa remoteActions()
  */
+
+/*!
+    \qmlsignal Notification::actionInvoked(string name)
+
+    Emitted when a notification action is activated by the user. \a name indicates the name of the invoked action.
+
+    Handling the \c actionInvoked signal is only effective if the process is running when the
+    user activates the notification, which may occur long after the notification is
+    published.
+ */
+/*!
+    \fn void Notification::actionInvoked(const QString &name)
+
+    Emitted when a notification action is activated by the user. \a name indicates the name of the invoked action.
+
+    Handling the \c actionInvoked signal is only effective if the process is running when the
+    user activates the notification, which may occur long after the notification is
+    published.
+ */
 void Notification::checkActionInvoked(uint id, QString actionKey)
 {
     Q_D(Notification);
     if (id == d->replacesId) {
+        emit actionInvoked(actionKey);
+
         if (actionKey == DEFAULT_ACTION_NAME) {
             emit clicked();
         }
@@ -1180,14 +1415,19 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
     \internal
  */
 
+
 /*!
     \qmlproperty list<variant> Notification::remoteActions
 
     The remote actions registered for potential invocation by this notification.
 
     Remote actions are specified as a list of objects having the properties
-    'name', 'service', 'path', 'iface' and 'method', and optionally, the
-    properties 'displayName', 'icon' and 'arguments'.
+    'name', 'displayName, 'icon', 'service', 'path', 'iface', 'method',
+    and 'arguments'. 'Name' is always a required property, and 'displayName'
+    if the action is other than "default" or "app".
+
+    If D-Bus callback is needed, then 'service', 'path, 'iface, 'method', and optionally
+    'arguments' should be set.
 
     For example:
 
@@ -1206,10 +1446,20 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
     }
     \endqml
 
-    \note the current implementation of Lipstick will invoke the action named "default" when
-    the user activates an individual notification.  If the user activates a notification
-    group, the action named "app" will be invoked, if that action is shared by all members of
-    the group.
+    \qml
+    Notification {
+        remoteAction: [ {
+           "name": "default"
+        }, {
+           "name": "extraAction",
+           "displayName": "Extra action (no callback)"
+        } ]
+    }
+    \endqml
+
+    \note the action named "default" will be invoked when the user activates the main notification item.
+    If the user activates a notification group, the action named "app" will be invoked, if that action is
+    shared by all members of the group.
 
     This property is transmitted as the \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
  */
@@ -1218,14 +1468,13 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
 
     The remote actions registered for potential invocation by this notification.
 
-    Remote actions specify D-Bus calls to be emitted by the Notification Manager when a notification
+    Remote actions may specify D-Bus calls to be emitted by the Notification Manager when a notification
     is activated by the user.  \l{remoteAction()}
     {remoteAction} describes the format of a remote action specification.
 
-    \note the current implementation of Lipstick will invoke the action named "default" when
-    the user activates an individual notification.  If the user activates a notification
-    group, the action named "app" will be invoked, if that action is shared by all members of
-    the group.
+    \note the action named "default" will be invoked when the user activates the main notification item.
+    If the user activates a notification group, the action named "app" will be invoked, if that action is
+    shared by all members of the group.
 
     This property is transmitted as the \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
 
@@ -1292,8 +1541,7 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
 
     This property is transmitted as the extension hint value "x-nemo-origin".
 
-    \deprecated
-    This property is deprecated.
+    \obsolete
 */
 /*!
     \property Notification::origin
@@ -1307,8 +1555,7 @@ void Notification::setRemoteActions(const QVariantList &remoteActions)
 
     This property is transmitted as the extension hint value "x-nemo-origin".
 
-    \deprecated
-    This property is deprecated.
+    \obsolete
 */
 QString Notification::origin() const
 {
@@ -1320,6 +1567,7 @@ void Notification::setOrigin(const QString &origin)
 {
     Q_D(Notification);
     if (origin != this->origin()) {
+        qWarning() << "Notification sets deprecated origin property to" << origin << ", use subText instead";
         d->hints.insert(HINT_ORIGIN, origin);
         emit originChanged();
     }
@@ -1353,6 +1601,7 @@ void Notification::setMaxContentLines(int max)
 {
     Q_D(Notification);
     if (max != this->maxContentLines()) {
+        qWarning() << "Notification::maxContentLines property is deprecated";
         d->hints.insert(HINT_MAX_CONTENT_LINES, max);
         emit maxContentLinesChanged();
     }
@@ -1367,7 +1616,7 @@ void Notification::setMaxContentLines(int max)
     This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "transient".
 */
 /*!
-    \property Notification::transient
+    \property Notification::isTransient
 
     A property suggesting that notification should be only briefly shown.
 
@@ -1392,13 +1641,13 @@ void Notification::setIsTransient(bool value)
     \qmlproperty var Notification::progress
 
     Property containing the progress the notification represent. Value can be undefined for no progress,
-    Notification.ProgressIndeterminate for indetermiante state or real between 0.0 and 1.0 to represent progress percentage.
+    Notification.ProgressIndeterminate for indeterminate state or real between 0.0 and 1.0 to represent progress percentage.
 */
 /*!
     \property Notification::progress
 
     Property containing the progress the notification represent. Value can be undefined for no progress,
-    Notification::ProgressIndeterminate for indetermiante state or real between 0.0 and 1.0 to represent progress percentage.
+    Notification::ProgressIndeterminate for indeterminate state or real between 0.0 and 1.0 to represent progress percentage.
 */
 
 QVariant Notification::progress() const
@@ -1410,11 +1659,16 @@ QVariant Notification::progress() const
 void Notification::setProgress(const QVariant &value)
 {
     Q_D(Notification);
+
     if (value.isNull()) {
         resetProgress();
-    } else if (value != this->progress()) {
-        d->hints.insert(HINT_PROGRESS, value);
-        emit progressChanged();
+    } else {
+        // D-Bus doesn't support float types so force to double to avoid apps getting surprised
+        QVariant filteredValue(value.toDouble());
+        if (filteredValue != this->progress()) {
+            d->hints.insert(HINT_PROGRESS, filteredValue);
+            emit progressChanged();
+        }
     }
 }
 
@@ -1510,16 +1764,14 @@ QList<QObject *> Notification::notificationsByCategory(const QString &category)
 /*!
     \fn Notification::remoteAction(const QString &, const QString &, const QString &, const QString &, const QString &, const QString &, const QVariantList &)
 
-    Helper function to assemble an object specifying a remote action, to be invoked via D-Bus.
+    Helper function to assemble an object specifying a remote action, potentially to be invoked via D-Bus.
 
-    A valid remote action must contain \a name, \a service, \a path, \a iface
-    and \a method values. \a displayName and \a arguments are optional properties.
-    The values are used to construct a D-Bus call to be invoked by the Notification
-    Manager when the notification is activated by the user:
+    If \a service, \a path, \a iface, \a method, and optionally \a arguments are set, the action
+    can trigger a D-Bus callback when activated by the user.
 
     \list
-    \li \a name: the name of the action (currently Lipstick will only invoke the actions named "default" and "app")
-    \li \a displayName: the name of the action to be displayed to user (not currently used by Lipstick)
+    \li \a name: the name of the action. "default" for the whole notification icon. If empty, will generate a name
+    \li \a displayName: the name of the action to be displayed to user. May not get displayed for "default", in which case it can be empty.
     \li \a service: the name of the D-Bus service to be invoked
     \li \a path: the object path to be invoked via D-Bus
     \li \a iface: the interface to be invoked via D-Bus
@@ -1532,10 +1784,13 @@ QVariant Notification::remoteAction(const QString &name, const QString &displayN
                                     const QString &method, const QVariantList &arguments)
 {
     QVariantMap action;
+    static quint32 autoActionNameCounter = 0;
 
-    if (!name.isEmpty()) {
-        action.insert(QStringLiteral("name"), name);
-    }
+    const QString &actionName = name.isEmpty()
+            ? QStringLiteral("action_%1_%2").arg(time(nullptr)).arg(++autoActionNameCounter)
+            : name;
+    action.insert(QStringLiteral("name"), actionName);
+
     if (!displayName.isEmpty()) {
         action.insert(QStringLiteral("displayName"), displayName);
     }
@@ -1601,3 +1856,5 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NotificationData 
 
     return argument;
 }
+
+#include "moc_notification.cpp"

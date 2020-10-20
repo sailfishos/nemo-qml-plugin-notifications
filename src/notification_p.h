@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Jolla Ltd.
- * Contact: Vesa Halttunen <vesa.halttunen@jollamobile.com>
+ * Copyright (C) 2013 - 2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * You may use this file under the terms of the BSD license as follows:
  *

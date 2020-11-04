@@ -56,8 +56,8 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(Urgency urgency READ urgency WRITE setUrgency NOTIFY urgencyChanged)
     Q_PROPERTY(qint32 expireTimeout READ expireTimeout WRITE setExpireTimeout NOTIFY expireTimeoutChanged)
     Q_PROPERTY(QDateTime timestamp READ timestamp WRITE setTimestamp NOTIFY timestampChanged)
-    Q_PROPERTY(QString previewSummary READ previewSummary WRITE setPreviewSummary RESET clearPreviewSummary NOTIFY previewSummaryChanged)
-    Q_PROPERTY(QString previewBody READ previewBody WRITE setPreviewBody RESET clearPreviewBody NOTIFY previewBodyChanged)
+    Q_PROPERTY(QString previewSummary READ previewSummary WRITE setPreviewSummary NOTIFY previewSummaryChanged)
+    Q_PROPERTY(QString previewBody READ previewBody WRITE setPreviewBody NOTIFY previewBodyChanged)
     Q_PROPERTY(QString subText READ subText WRITE setSubText NOTIFY subTextChanged)
     Q_PROPERTY(QString sound READ sound WRITE setSound NOTIFY soundChanged)
     Q_PROPERTY(QImage iconData READ iconData WRITE setIconData NOTIFY iconDataChanged)
@@ -117,11 +117,9 @@ public:
 
     QString previewSummary() const;
     void setPreviewSummary(const QString &previewSummary);
-    void clearPreviewSummary();
 
     QString previewBody() const;
     void setPreviewBody(const QString &previewBody);
-    void clearPreviewBody();
 
     QString subText() const;
     void setSubText(const QString &subText);

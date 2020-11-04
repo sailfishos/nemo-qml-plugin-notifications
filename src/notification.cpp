@@ -263,20 +263,6 @@ QVariantList decodeActionHints(const QList<NotificationData::ActionInfo> &action
     return rv;
 }
 
-bool resetPreviewValue(QVariantHash *hints, const QString &hint)
-{
-    auto it = hints->find(hint);
-    if (it == hints->end()) {
-        hints->insert(hint, QVariant());
-        return true;
-    } else if (it.value().isValid()) {
-        it.value() = QVariant();
-        return true;
-    }
-
-    return false;
-}
-
 }
 
 class NotificationPrivate : public NotificationData
@@ -851,7 +837,7 @@ void Notification::setTimestamp(const QDateTime &timestamp)
 
     Summary text to be shown in the preview banner for the notification, if any.
 
-    If this is not set (and has not been set to \c undefined) it will automatically be set to the
+    If this is not set it will automatically be set to the
     \l summary value when the notification is published.
 
     When the \l previewSummary or \c previewBody is specified, a preview of the notification
@@ -865,7 +851,7 @@ void Notification::setTimestamp(const QDateTime &timestamp)
 
     Summary text to be shown in the preview banner for the notification, if any.
 
-    If this is not set (and has not been reset with \l clearPreviewSummary) it will automatically be set to the
+    If this is not set it will automatically be set to the
     \l summary value when the notification is published.
 
     When the \l previewSummary or \c previewBody is specified, a preview of the notification
@@ -889,20 +875,12 @@ void Notification::setPreviewSummary(const QString &previewSummary)
     }
 }
 
-void Notification::clearPreviewSummary()
-{
-    Q_D(Notification);
-    if (resetPreviewValue(&d->hints, HINT_PREVIEW_SUMMARY)) {
-        emit previewSummaryChanged();
-    }
-}
-
 /*!
     \qmlproperty string Notification::previewBody
 
     Body text to be shown in the preview banner for the notification, if any.
 
-    If this is not set (and has not been set to \c undefined) it will automatically be set to the
+    If this is not set it will automatically be set to the
     \l body value when the notification is published.
 
     When the \l previewSummary or \c previewBody is specified, a preview of the notification
@@ -916,7 +894,7 @@ void Notification::clearPreviewSummary()
 
     Body text to be shown in the preview banner for the notification, if any.
 
-    If this is not set (and has not been reset with \l clearPreviewBody) it will automatically be set to the
+    If this is not set it will automatically be set to the
     \l body value when the notification is published.
 
     When the \l previewSummary or \c previewBody is specified, a preview of the notification
@@ -936,14 +914,6 @@ void Notification::setPreviewBody(const QString &previewBody)
     Q_D(Notification);
     if (previewBody != this->previewBody()) {
         d->hints.insert(HINT_PREVIEW_BODY, previewBody);
-        emit previewBodyChanged();
-    }
-}
-
-void Notification::clearPreviewBody()
-{
-    Q_D(Notification);
-    if (resetPreviewValue(&d->hints, HINT_PREVIEW_BODY)) {
         emit previewBodyChanged();
     }
 }
@@ -1131,10 +1101,6 @@ void Notification::publish()
         auto it = hints.find(hint);
         if (it == hints.end()) {
             hints.insert(hint, defaultValue);
-        } else if (!it.value().isValid()) {
-            // Set an empty string to indicate that there is no preview text. The value cannot
-            // be invalid as QDBusVariant serialization expects valid values.
-            it.value() = QString();
         }
     };
 
@@ -1700,6 +1666,11 @@ QVariant Notification::hintValue(const QString &hint) const
 void Notification::setHintValue(const QString &hint, const QVariant &value)
 {
     Q_D(Notification);
+    if (!value.isValid()) {
+        // to consider: filter out everything that doesn't serialize to d-bus?
+        qWarning() << "Invalid value given for notification hint" << hint;
+        return;
+    }
     d->hints.insert(hint, value);
 }
 

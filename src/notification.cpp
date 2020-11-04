@@ -1666,6 +1666,11 @@ QVariant Notification::hintValue(const QString &hint) const
 void Notification::setHintValue(const QString &hint, const QVariant &value)
 {
     Q_D(Notification);
+    if (!value.isValid()) {
+        // to consider: filter out everything that doesn't serialize to d-bus?
+        qWarning() << "Invalid value given for notification hint" << hint;
+        return;
+    }
     d->hints.insert(hint, value);
 }
 

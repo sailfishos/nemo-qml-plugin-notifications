@@ -2,7 +2,6 @@ Name:       nemo-qml-plugin-notifications-qt5
 Summary:    Notifications plugin for Nemo Mobile
 Version:    1.2.0
 Release:    1
-Group:      System/Libraries
 License:    BSD
 URL:        https://git.merproject.org/mer-core/nemo-qml-plugin-notifications
 Source0:    %{name}-%{version}.tar.bz2
@@ -19,7 +18,6 @@ BuildRequires:  mer-qdoc-template
 
 %package devel
 Summary:    Notifications support for C++ applications
-Group:      System/Libraries
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -27,7 +25,6 @@ Requires:   %{name} = %{version}-%{release}
 
 %package doc
 Summary: Documentation for %{name}
-Group: Documentation
 BuildRequires: qt5-qttools-qthelp-devel
 BuildRequires: qt5-tools
 BuildRequires: qt5-plugin-platform-minimal
@@ -63,6 +60,7 @@ sed 's/Nemo.Notifications/org.nemomobile.notifications/' < src/plugin/qmldir > %
 
 %files
 %defattr(-,root,root,-)
+%license LICENSE
 %{_libdir}/libnemonotifications-qt5.so.*
 %{_libdir}/qt5/qml/Nemo/Notifications
 

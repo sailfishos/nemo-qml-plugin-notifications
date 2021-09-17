@@ -46,5 +46,9 @@
       <arg name="notifications" type="a(sussasa{sv}i)" direction="out"/>
       <annotation name="org.qtproject.QtDBus.QtTypeName.Out0" value="QList &lt; NotificationData &gt; "/>
     </method>
+    <signal name="InputTextSet">
+      <arg name="id" type="u"/>
+      <arg name="input" type="s"/>
+    </signal>
   </interface>
 </node>

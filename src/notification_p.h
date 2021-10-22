@@ -54,6 +54,7 @@ struct NotificationData
     QList<ActionInfo> actions;
     QVariantHash hints;
     qint32 expireTimeout = -1;
+    QString inputText;
 };
 
 class NotificationManagerProxy;

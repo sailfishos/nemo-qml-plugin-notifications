@@ -67,6 +67,12 @@ Module {
             Parameter { name: "name"; type: "string" }
         }
         Signal {
+            name: "inputActionInvoked"
+            Parameter { name: "name"; type: "string" }
+            Parameter { name: "inputText"; type: "string" }
+        }
+        
+        Signal {
             name: "closed"
             Parameter { name: "reason"; type: "uint" }
         }

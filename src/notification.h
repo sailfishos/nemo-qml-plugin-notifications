@@ -182,10 +182,12 @@ public:
     Q_INVOKABLE static QVariant remoteAction(const QString &name, const QString &displayName,
                                              const QString &service = QString(), const QString &path = QString(), const QString &iface = QString(),
                                              const QString &method = QString(), const QVariantList &arguments = QVariantList());
+    static QVariant actionSetInputFormat(QVariant &action, QString &label, bool editable, const QStringList &choices = QStringList());
 
 signals:
     void clicked();
     void actionInvoked(const QString &name);
+    void inputActionInvoked(const QString &name, const QString &inputText);
     void closed(uint reason);
     void categoryChanged();
     void appNameChanged();
@@ -213,6 +215,7 @@ signals:
 private slots:
     void checkActionInvoked(uint id, QString actionKey);
     void checkNotificationClosed(uint id, uint reason);
+    void checkInputTextSet(uint id, const QString &inputText);
 
 private:
     NotificationPrivate * const d_ptr;

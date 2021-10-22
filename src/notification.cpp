@@ -54,6 +54,7 @@ const char *HINT_PREVIEW_SUMMARY = "x-nemo-preview-summary";
 const char *HINT_SUB_TEXT = "x-nemo-sub-text";
 const char *HINT_REMOTE_ACTION_PREFIX = "x-nemo-remote-action-";
 const char *HINT_REMOTE_ACTION_ICON_PREFIX = "x-nemo-remote-action-icon-";
+const char *HINT_REMOTE_ACTION_INPUT_PREFIX = "x-nemo-remote-action-input-";
 const char *HINT_ORIGIN = "x-nemo-origin";
 const char *HINT_OWNER = "x-nemo-owner";
 const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
@@ -191,7 +192,6 @@ QList<NotificationData::ActionInfo> decodeActions(const QStringList &actions)
 QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const QVariantList &actions)
 {
     QPair<QList<NotificationData::ActionInfo>, QVariantHash> rv;
-
     foreach (const QVariant &action, actions) {
         QVariantMap vm = action.value<QVariantMap>();
         const QString actionName = vm["name"].value<QString>();
@@ -203,15 +203,19 @@ QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const
             const QString method = vm["method"].value<QString>();
             const QVariantList arguments = vm["arguments"].value<QVariantList>();
             const QString icon = vm["icon"].value<QString>();
+            const QVariantMap input = vm["input"].value<QVariantMap>();
 
             const NotificationData::ActionInfo actionInfo = { actionName, displayName };
             rv.first.append(actionInfo);
 
             if (!service.isEmpty() && !path.isEmpty() && !iface.isEmpty() && !method.isEmpty()) {
                 rv.second.insert(QString(HINT_REMOTE_ACTION_PREFIX) + actionName, encodeDBusCall(service, path, iface, method, arguments));
-                if (!icon.isEmpty()) {
-                    rv.second.insert(QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName, icon);
-                }
+            }
+            if (!icon.isEmpty()) {
+                rv.second.insert(QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName, icon);
+            }
+            if (!input.isEmpty()) {
+                rv.second.insert(QString(HINT_REMOTE_ACTION_INPUT_PREFIX) + actionName, input);
             }
         }
     }
@@ -254,18 +258,21 @@ QVariantList decodeActionHints(const QList<NotificationData::ActionInfo> &action
                     args.append(var);
                 }
                 action.insert(QStringLiteral("arguments"), args);
-
-                action.insert(QStringLiteral("name"), actionName);
-                action.insert(QStringLiteral("displayName"), displayName);
-
-                const QString iconHintName = QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName;
-                const QString &iconHint = hints[iconHintName].toString();
-                if (!iconHint.isEmpty()) {
-                    action.insert(QStringLiteral("icon"), iconHint);
-                }
-
-                rv.append(action);
             }
+            action.insert(QStringLiteral("name"), actionName);
+            action.insert(QStringLiteral("displayName"), displayName);
+
+            const QString iconHintName = QString(HINT_REMOTE_ACTION_ICON_PREFIX) + actionName;
+            const QString &iconHint = hints[iconHintName].toString();
+            if (!iconHint.isEmpty()) {
+                action.insert(QStringLiteral("icon"), iconHint);
+            }
+
+            const QString actionInputHintName = QString(HINT_REMOTE_ACTION_INPUT_PREFIX) + actionName;
+            if (hints.contains(actionInputHintName)) {
+                action.insert(QStringLiteral("input"), hints[actionInputHintName].toMap());
+            }
+            rv.append(action);
         }
     }
 
@@ -391,6 +398,11 @@ class NotificationPrivate : public NotificationData
                 "name": "ignore",
                 "displayName": "Ignore the problem",
                 "icon": "icon-s-ignore",
+                "input" : {
+                    "label": "Please select",
+                    "editable": true,
+                    "choices": [ "Yes", "No", "Maybe" ]
+                },
                 "service": "org.nemomobile.example",
                 "path": "/example",
                 "iface": "org.nemomobile.example",
@@ -463,6 +475,7 @@ Notification::Notification(QObject *parent) :
     d_ptr->hints.insert(HINT_URGENCY, static_cast<int>(Notification::Normal));
     connect(notificationManager(), SIGNAL(ActionInvoked(uint,QString)), this, SLOT(checkActionInvoked(uint,QString)));
     connect(notificationManager(), SIGNAL(NotificationClosed(uint,uint)), this, SLOT(checkNotificationClosed(uint,uint)));
+    connect(notificationManager(), SIGNAL(InputTextSet(uint,QString)), this, SLOT(checkInputTextSet(uint,QString)));
 }
 
 /*!
@@ -475,6 +488,7 @@ Notification::Notification(const NotificationData &data, QObject *parent) :
 {
     connect(notificationManager(), SIGNAL(ActionInvoked(uint,QString)), this, SLOT(checkActionInvoked(uint,QString)));
     connect(notificationManager(), SIGNAL(NotificationClosed(uint,uint)), this, SLOT(checkNotificationClosed(uint,uint)));
+    connect(notificationManager(), SIGNAL(InputTextSet(uint,QString)), this, SLOT(checkInputTextSet(uint,QString)));
 }
 
 /*!
@@ -1186,15 +1200,60 @@ void Notification::close()
     user activates the notification, which may occur long after the notification is
     published.
  */
+/*!
+    \qmlsignal Notification::inputActionInvoked(string name, string inputText)
+    \internal
+
+    Emitted when a notification action that requires input text is activated by the user. \a name indicates the name of the invoked action. \a inputText contains the user text.
+
+    Handling the \c inputActionInvoked signal is only effective if the process is running when the
+    user activates the notification, which may occur long after the notification is
+    published.
+ */
+/*!
+    \fn void Notification::inputActionInvoked(const QString &name, const QString &inputText)
+    \internal
+
+    Emitted when a notification action that requires input text is activated by the user. \a name indicates the name of the invoked action. \a inputText contains the user text.
+
+    Handling the \c inputActionInvoked signal is only effective if the process is running when the
+    user activates the notification, which may occur long after the notification is
+    published.
+ */
 void Notification::checkActionInvoked(uint id, QString actionKey)
 {
     Q_D(Notification);
     if (id == d->replacesId) {
-        emit actionInvoked(actionKey);
-
+        foreach (const QVariant &action, d->remoteActions) {
+            QVariantMap vm = action.value<QVariantMap>();
+            const QString actionName = vm["name"].value<QString>();
+            if (!actionName.isEmpty() && actionName == actionKey) {
+                if (vm.contains("input")) { // Need input
+                    const QVariantMap input = vm["input"].value<QVariantMap>();
+                    if (d->inputText.isEmpty() // Input is empty
+                        || (input.contains("choices") && !input["choices"].value<QStringList>().contains(d->inputText) // and not a valid choice 
+                            && (!input.contains("editable") || input["editable"].toBool() == false))) { // and not editable
+                        // TODO: Some sort of signal of rejection to the sender?
+                        break;
+                    }
+                    emit inputActionInvoked(actionKey, d->inputText);
+                } else {
+                    emit actionInvoked(actionKey);
+                }
+                break;
+            }
+        }
         if (actionKey == DEFAULT_ACTION_NAME) {
             emit clicked();
         }
+    }
+}
+
+void Notification::checkInputTextSet(uint id, const QString &inputText)
+{
+    Q_D(Notification);
+    if (id == d->replacesId && inputText != d->inputText) {
+        d->inputText = inputText;
     }
 }
 
@@ -1791,6 +1850,30 @@ QVariant Notification::remoteAction(const QString &name, const QString &displayN
     }
 
     return action;
+}
+
+/*!
+    \fn Notification::actionSetInputFormat(QVariant &, QString &, bool, const QStringList &)
+    \internal
+
+    Helper function to add details to a remote action to be invoked via D-Bus. 
+
+    \list
+    \li \a action: QVariantMap created by Notification::remoteAction
+    \li \a label: QString caption for the input field
+    \li \a editable: whether the input can be freetext typed or edited by the user
+    \li \a choices: A QStringList of options to select. If editable is also set, then the user may edit their selection.
+    \endlist
+*/
+QVariant Notification::actionSetInputFormat(QVariant &action, QString &label, bool editable, const QStringList &choices)
+{
+    QVariantMap vm = action.value<QVariantMap>();
+    QVariantMap input;
+    input.insert(QStringLiteral("label"), label);
+    input.insert(QStringLiteral("editable"), editable);
+    input.insert(QStringLiteral("choices"), choices);
+    vm.insert(QStringLiteral("input"), input);
+    return vm;
 }
 
 /*!

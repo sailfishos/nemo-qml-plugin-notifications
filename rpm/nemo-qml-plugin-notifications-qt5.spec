@@ -3,7 +3,7 @@ Summary:    Notifications plugin for Nemo Mobile
 Version:    1.2.0
 Release:    1
 License:    BSD
-URL:        https://git.merproject.org/mer-core/nemo-qml-plugin-notifications
+URL:        https://github.com/sailfishos/nemo-qml-plugin-notifications/
 Source0:    %{name}-%{version}.tar.bz2
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -11,7 +11,7 @@ BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5DBus)
-BuildRequires:  mer-qdoc-template
+BuildRequires:  sailfish-qdoc-template
 
 %description
 %{summary}.
@@ -41,13 +41,12 @@ BuildRequires: qt5-plugin-sqldriver-sqlite
 %qmake5 VERSION=%{version}
 
 make %{?_smp_mflags}
-make docs
 
 %install
 rm -rf %{buildroot}
 %qmake_install
 mkdir -p %{buildroot}/%{_docdir}/%{name}
-cp -R html/* %{buildroot}/%{_docdir}/%{name}/
+cp -R doc/html/* %{buildroot}/%{_docdir}/%{name}/
 
 # org.nemomobile.notifications legacy import
 mkdir -p %{buildroot}%{_libdir}/qt5/qml/org/nemomobile/notifications/

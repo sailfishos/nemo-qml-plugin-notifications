@@ -60,6 +60,7 @@ class Q_DECL_EXPORT Notification : public QObject
     Q_PROPERTY(QString previewBody READ previewBody WRITE setPreviewBody NOTIFY previewBodyChanged)
     Q_PROPERTY(QString subText READ subText WRITE setSubText NOTIFY subTextChanged)
     Q_PROPERTY(QString sound READ sound WRITE setSound NOTIFY soundChanged)
+    Q_PROPERTY(QString soundName READ soundName WRITE setSoundName NOTIFY soundNameChanged)
     Q_PROPERTY(QImage iconData READ iconData WRITE setIconData NOTIFY iconDataChanged)
     Q_PROPERTY(int itemCount READ itemCount WRITE setItemCount NOTIFY itemCountChanged)
     Q_PROPERTY(QVariantList remoteActions READ remoteActions WRITE setRemoteActions NOTIFY remoteActionsChanged)
@@ -126,6 +127,9 @@ public:
 
     QString sound() const;
     void setSound(const QString &sound);
+
+    QString soundName() const;
+    void setSoundName(const QString &soundName);
 
     QImage iconData() const;
     void setIconData(const QImage &image);
@@ -203,6 +207,7 @@ signals:
     void previewSummaryChanged();
     void previewBodyChanged();
     void soundChanged();
+    void soundNameChanged();
     void iconDataChanged();
     void itemCountChanged();
     void remoteActionsChanged();

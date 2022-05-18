@@ -61,6 +61,7 @@ const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
 const char *DEFAULT_ACTION_NAME = "default";
 const char *HINT_PROGRESS = "x-nemo-progress";
 const char *HINT_SOUND_FILE = "sound-file";
+const char *HINT_SOUND_NAME = "sound-name";
 const char *HINT_IMAGE_DATA = "image-data";
 const char *HINT_IMAGE_PATH = "image-path";
 
@@ -1002,6 +1003,37 @@ void Notification::setSound(const QString &sound)
     if (sound != this->sound()) {
         d->hints.insert(HINT_SOUND_FILE, sound);
         emit soundChanged();
+    }
+}
+
+/*!
+    \qmlproperty string Notification::soundName
+
+    The name of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-name", names following the freedesktop.org sound
+    naming specification. Sound name can be e.g. "message-new-instant" or "message-new-email".
+ */
+/*!
+    \property Notification::soundName
+
+    The name of a sound to be played when the notification is shown.
+
+    This property is transmitted as the hint value "sound-name", names following the freedesktop.org sound
+    naming specification. Sound name can be e.g. "message-new-instant" or "message-new-email".
+ */
+QString Notification::soundName() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_SOUND_NAME).toString();
+}
+
+void Notification::setSoundName(const QString &soundName)
+{
+    Q_D(Notification);
+    if (soundName != this->soundName()) {
+        d->hints.insert(HINT_SOUND_NAME, soundName);
+        emit soundNameChanged();
     }
 }
 

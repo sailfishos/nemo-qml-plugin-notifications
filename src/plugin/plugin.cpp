@@ -34,6 +34,8 @@
 #include <QtQml>
 #include <QQmlEngine>
 #include <QQmlExtensionPlugin>
+#include <QDebug>
+
 #include "notification.h"
 
 class Q_DECL_EXPORT NemoNotificationsPlugin : public QQmlExtensionPlugin
@@ -54,6 +56,9 @@ public:
     {
         Q_ASSERT(uri == QLatin1String("Nemo.Notifications") || uri == QLatin1String("org.nemomobile.notifications"));
 
+        if (uri == QLatin1String("org.nemomobile.notifications")) {
+            qWarning() << "org.nemomobile.notifications import is deprecated. Suggest migrating to Nemo.Notifications";
+        }
         qmlRegisterType<Notification>(uri, 1, 0, "Notification");
     }
 };

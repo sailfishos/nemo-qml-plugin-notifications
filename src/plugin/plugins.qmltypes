@@ -49,6 +49,7 @@ Module {
         Property { name: "previewBody"; type: "string" }
         Property { name: "subText"; type: "string" }
         Property { name: "sound"; type: "string" }
+        Property { name: "soundName"; type: "string" }
         Property { name: "iconData"; type: "QImage" }
         Property { name: "itemCount"; type: "int" }
         Property { name: "remoteActions"; type: "QVariantList" }
@@ -71,7 +72,6 @@ Module {
             Parameter { name: "name"; type: "string" }
             Parameter { name: "inputText"; type: "string" }
         }
-        
         Signal {
             name: "closed"
             Parameter { name: "reason"; type: "uint" }

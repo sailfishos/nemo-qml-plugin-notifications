@@ -55,6 +55,7 @@ const char *HINT_SUB_TEXT = "x-nemo-sub-text";
 const char *HINT_REMOTE_ACTION_PREFIX = "x-nemo-remote-action-";
 const char *HINT_REMOTE_ACTION_ICON_PREFIX = "x-nemo-remote-action-icon-";
 const char *HINT_REMOTE_ACTION_INPUT_PREFIX = "x-nemo-remote-action-input-";
+const char *HINT_REMOTE_ACTION_TYPE_PREFIX = "x-nemo-remote-action-type-";
 const char *HINT_ORIGIN = "x-nemo-origin";
 const char *HINT_OWNER = "x-nemo-owner";
 const char *HINT_MAX_CONTENT_LINES = "x-nemo-max-content-lines";
@@ -209,6 +210,7 @@ QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const
             const QVariantList arguments = vm["arguments"].value<QVariantList>();
             const QString icon = vm["icon"].value<QString>();
             const QVariantMap input = vm["input"].value<QVariantMap>();
+            QString type = vm["type"].value<QString>();
 
             const NotificationData::ActionInfo actionInfo = { actionName, displayName };
             rv.first.append(actionInfo);
@@ -221,6 +223,12 @@ QPair<QList<NotificationData::ActionInfo>, QVariantHash> encodeActionHints(const
             }
             if (!input.isEmpty()) {
                 rv.second.insert(QString(HINT_REMOTE_ACTION_INPUT_PREFIX) + actionName, input);
+                if (type.isEmpty()) {
+                    type = QLatin1String("input");
+                }
+            }
+            if (!type.isEmpty()) {
+                rv.second.insert(QString(HINT_REMOTE_ACTION_TYPE_PREFIX) + actionName, type);
             }
         }
     }

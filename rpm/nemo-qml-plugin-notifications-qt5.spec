@@ -1,6 +1,6 @@
 Name:       nemo-qml-plugin-notifications-qt5
 Summary:    Notifications plugin for Nemo Mobile
-Version:    1.2.0
+Version:    1.2.23
 Release:    1
 License:    BSD
 URL:        https://github.com/sailfishos/nemo-qml-plugin-notifications/

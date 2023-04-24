@@ -327,7 +327,7 @@ class NotificationPrivate : public NotificationData
 
     The Notification type is a convenience type for using notifications
     based on the
-    \l {https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html}
+    \l {https://specifications.freedesktop.org/notification-spec/latest/}
     {Desktop Notifications Specification} as implemented in Nemo.
 
     This type allows clients to create instances of notifications, which
@@ -434,7 +434,7 @@ class NotificationPrivate : public NotificationData
 
     The Notification class is a convenience class for using notifications
     based on the
-    \l {https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html}
+    \l {https://specifications.freedesktop.org/notification-spec/latest/}
     {Desktop Notifications Specification} as implemented in Nemo.
 
     This class allows clients to create instances of notifications, which
@@ -509,7 +509,7 @@ Notification::~Notification()
     Properties defined by the category definition file will be applied to the notification,
     unless those properties are already set in the notification.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "category".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "category".
  */
 /*!
     \property Notification::category
@@ -519,7 +519,7 @@ Notification::~Notification()
     Properties defined by the category definition file will be applied to the notification,
     unless those properties are already set in the notification.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "category".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "category".
  */
 QString Notification::category() const
 {
@@ -543,7 +543,7 @@ void Notification::setCategory(const QString &category)
 
     The application name should be the formal name, localized if appropriate.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "app_name".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "app_name".
  */
 /*!
     \property Notification::appName
@@ -552,7 +552,7 @@ void Notification::setCategory(const QString &category)
 
     The application name should be the formal name, localized if appropriate.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "app_name".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "app_name".
  */
 QString Notification::appName() const
 {
@@ -577,7 +577,7 @@ void Notification::setAppName(const QString &appName)
 
     Alternatively the iconData property may be used to set a decoded image.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-path".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "image-path".
  */
 /*!
     \property Notification::icon
@@ -587,7 +587,7 @@ void Notification::setAppName(const QString &appName)
 
     Alternatively the iconData property may be used to set a decoded image.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-path".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "image-path".
 
     \sa iconData
  */
@@ -616,7 +616,7 @@ void Notification::setIcon(const QString &icon)
     of zero. The ID is automatically updated to contain the published ID after publication is
     reported by the Notification Manager.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "replaces_id".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "replaces_id".
  */
 /*!
     \property Notification::replacesId
@@ -628,7 +628,7 @@ void Notification::setIcon(const QString &icon)
     of zero. The ID is automatically updated to contain the published ID after publication is
     reported by the Notification Manager.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "replaces_id".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "replaces_id".
  */
 uint Notification::replacesId() const
 {
@@ -651,7 +651,7 @@ void Notification::setReplacesId(uint id)
     The icon for the application that this notification is associated with. The value can
     be a URI, an absolute filesystem path, or a token to be interpreted by the theme image provider.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "app_icon".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "app_icon".
  */
 /*!
     \property Notification::appIcon
@@ -659,7 +659,7 @@ void Notification::setReplacesId(uint id)
     The icon for the application that this notification is associated with. The value can
     be a URI, an absolute filesystem path, or a token to be interpreted by the theme image provider.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "app_icon".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "app_icon".
  */
 QString Notification::appIcon() const
 {
@@ -682,7 +682,7 @@ void Notification::setAppIcon(const QString &appIcon)
     The summary text briefly describing the notification.
     The summary should give a brief, single-line description of the notification.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "summary".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "summary".
  */
 /*!
     \property Notification::summary
@@ -690,7 +690,7 @@ void Notification::setAppIcon(const QString &appIcon)
     The summary text briefly describing the notification.
     The summary should give a brief, single-line description of the notification.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "summary".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "summary".
  */
 QString Notification::summary() const
 {
@@ -712,14 +712,14 @@ void Notification::setSummary(const QString &summary)
 
     Optional detailed body text.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "body".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "body".
  */
 /*!
     \property Notification::body
 
     Optional detailed body text.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "body".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "body".
  */
 QString Notification::body() const
 {
@@ -754,7 +754,7 @@ void Notification::setBody(const QString &body)
 
     Defaults to Normal urgency.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "urgency".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "urgency".
  */
 /*!
     \property Notification::urgency
@@ -768,7 +768,7 @@ void Notification::setBody(const QString &body)
 
     Defaults to Normal urgency.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "urgency".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "urgency".
  */
 Notification::Urgency Notification::urgency() const
 {
@@ -795,7 +795,7 @@ void Notification::setUrgency(Urgency urgency)
 
     Defaults to -1.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "expire_timeout".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "expire_timeout".
  */
 /*!
     \property Notification::expireTimeout
@@ -806,7 +806,7 @@ void Notification::setUrgency(Urgency urgency)
 
     Defaults to -1.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "expire_timeout".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "expire_timeout".
  */
 qint32 Notification::expireTimeout() const
 {
@@ -982,14 +982,14 @@ void Notification::setSubText(const QString &subText)
 
     The file path of a sound to be played when the notification is shown.
 
-    This property is transmitted as the hint value "sound-file".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "sound-file".
  */
 /*!
     \property Notification::sound
 
     The file path of a sound to be played when the notification is shown.
 
-    This property is transmitted as the hint value "sound-file".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "sound-file".
  */
 QString Notification::sound() const
 {
@@ -1011,16 +1011,18 @@ void Notification::setSound(const QString &sound)
 
     The name of a sound to be played when the notification is shown.
 
-    This property is transmitted as the hint value "sound-name", names following the freedesktop.org sound
-    naming specification. Sound name can be e.g. "message-new-instant" or "message-new-email".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "sound-name",
+    names following \l{https://specifications.freedesktop.org/sound-naming-spec/latest/index.html}{the freedesktop.org sound naming specification}.
+    Sound name can be e.g. "message-new-instant" or "message-new-email".
  */
 /*!
     \property Notification::soundName
 
     The name of a sound to be played when the notification is shown.
 
-    This property is transmitted as the hint value "sound-name", names following the freedesktop.org sound
-    naming specification. Sound name can be e.g. "message-new-instant" or "message-new-email".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "sound-name",
+    names following \l{https://specifications.freedesktop.org/sound-naming-spec/latest/index.html}{the freedesktop.org sound naming specification}.
+    Sound name can be e.g. "message-new-instant" or "message-new-email".
  */
 QString Notification::soundName() const
 {
@@ -1045,7 +1047,7 @@ void Notification::setSoundName(const QString &soundName)
     Alternatively the \l icon property may be used to a set the URI of a persistent image file
     or a theme identifier for the icon.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-data".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "image-data".
  */
 
 /*!
@@ -1056,7 +1058,7 @@ void Notification::setSoundName(const QString &soundName)
     Alternatively the \l icon property may be used to a set the URI of a persistent image file
     or a theme identifier for the icon.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "image-data".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "image-data".
 
     \sa icon
  */
@@ -1527,7 +1529,7 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
     If the user activates a notification group, the action named "app" will be invoked, if that action is
     shared by all members of the group.
 
-    This property is transmitted as the \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
+    This property is transmitted as the \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
  */
 /*!
     \property Notification::remoteActions
@@ -1542,7 +1544,7 @@ void Notification::setRemoteDBusCallArguments(const QVariantList &arguments)
     If the user activates a notification group, the action named "app" will be invoked, if that action is
     shared by all members of the group.
 
-    This property is transmitted as the \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#commands}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
+    This property is transmitted as the \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s09.html#command-notify}{Notify} parameter "actions" and the extension hint value "x-nemo-remote-action-<name>".
 
     \sa remoteAction()
  */
@@ -1679,14 +1681,14 @@ void Notification::setMaxContentLines(int max)
 
     A property suggesting that notification should be only briefly shown.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "transient".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "transient".
 */
 /*!
     \property Notification::isTransient
 
     A property suggesting that notification should be only briefly shown.
 
-    This property is transmitted as the standard \l{https://people.gnome.org/~mccann/docs/notification-spec/notification-spec-latest.html#hints}{hint value} "transient".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "transient".
 */
 bool Notification::isTransient() const
 {

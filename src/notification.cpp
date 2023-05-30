@@ -87,7 +87,11 @@ QDBusArgument &operator <<(QDBusArgument &argument, const NotificationImage &ima
     argument << image.hasAlphaChannel();
     argument << 8;
     argument << 4;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    argument << QByteArray(reinterpret_cast<const char *>(image.bits()), image.sizeInBytes());
+#else
     argument << QByteArray(reinterpret_cast<const char *>(image.bits()), image.byteCount());
+#endif
     argument.endStructure();
 
     return argument;
@@ -238,7 +242,11 @@ QVariantList decodeActionHints(const QList<NotificationData::ActionInfo> &action
             QVariantMap action;
 
             // Extract the element of the DBus call
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+            QStringList elements(hint.split(' ', Qt::SkipEmptyParts));
+#else
             QStringList elements(hint.split(' ', QString::SkipEmptyParts));
+#endif
             if (elements.size() <= 3) {
                 qWarning() << "Unable to decode invalid remote action:" << hint;
             } else {

@@ -33,6 +33,8 @@
 #ifndef NOTIFICATION_P_H
 #define NOTIFICATION_P_H
 
+#include <notificationexport.h>
+
 #include <QStringList>
 #include <QDateTime>
 #include <QVariantHash>
@@ -59,7 +61,7 @@ struct NotificationData
 
 class NotificationManagerProxy;
 
-class Q_DECL_EXPORT NotificationConnectionManager {
+class NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT NotificationConnectionManager {
 public:
     QSharedPointer<NotificationManagerProxy> proxy;
     QSharedPointer<QDBusConnection> dBusConnection;
@@ -67,8 +69,8 @@ public:
     static bool useDBusConnection(const QDBusConnection &bus);
 };
 
-Q_DECL_EXPORT QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);
-Q_DECL_EXPORT const QDBusArgument &operator>>(const QDBusArgument &, NotificationData &);
+NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT QDBusArgument &operator<<(QDBusArgument &, const NotificationData &);
+NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT const QDBusArgument &operator>>(const QDBusArgument &, NotificationData &);
 
 Q_DECLARE_METATYPE(NotificationData)
 Q_DECLARE_METATYPE(QList<NotificationData>)

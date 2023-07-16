@@ -8,7 +8,7 @@ CONFIG += qt plugin hide_symbols
 QT += qml
 
 INCLUDEPATH += ..
-LIBS += -L.. -lnemonotifications-qt5
+LIBS += -L.. -lnemonotifications-qt$${QT_MAJOR_VERSION}
 SOURCES += plugin.cpp
 
 target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH

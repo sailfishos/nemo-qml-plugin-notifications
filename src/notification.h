@@ -33,6 +33,8 @@
 #ifndef NOTIFICATION_H
 #define NOTIFICATION_H
 
+#include <notificationexport.h>
+
 #include <QStringList>
 #include <QDateTime>
 #include <QVariantHash>
@@ -43,7 +45,7 @@ struct NotificationData;
 class NotificationManagerProxy;
 class NotificationPrivate;
 
-class Q_DECL_EXPORT Notification : public QObject
+class NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT Notification : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString category READ category WRITE setCategory NOTIFY categoryChanged)

@@ -47,6 +47,7 @@ namespace {
 const char *HINT_CATEGORY = "category";
 const char *HINT_URGENCY = "urgency";
 const char *HINT_TRANSIENT = "transient";
+const char *HINT_RESIDENT = "resident";
 const char *HINT_ITEM_COUNT = "x-nemo-item-count";
 const char *HINT_TIMESTAMP = "x-nemo-timestamp";
 const char *HINT_PREVIEW_BODY = "x-nemo-preview-body";
@@ -1718,6 +1719,35 @@ void Notification::setIsTransient(bool value)
     if (value != this->isTransient()) {
         d->hints.insert(HINT_TRANSIENT, value);
         emit isTransientChanged();
+    }
+}
+
+/*!
+    \qmlproperty int Notification::resident
+
+    A resident property is not automatically closed when an action is invoked. It remains until explicitly removed by the user or by the sender.
+
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "transient".
+*/
+/*!
+    \property Notification::resident
+
+    A resident property is not automatically closed when an action is invoked. It remains until explicitly removed by the user or by the sender.
+
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "transient".
+*/
+bool Notification::resident() const
+{
+    Q_D(const Notification);
+    return d->hints.value(HINT_RESIDENT).toBool();
+}
+
+void Notification::setResident(bool value)
+{
+    Q_D(Notification);
+    if (value != this->resident()) {
+        d->hints.insert(HINT_RESIDENT, value);
+        emit residentChanged();
     }
 }
 

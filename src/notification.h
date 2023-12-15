@@ -67,6 +67,7 @@ class NEMO_QML_PLUGIN_NOTIFICATIONS_EXPORT Notification : public QObject
     Q_PROPERTY(int itemCount READ itemCount WRITE setItemCount NOTIFY itemCountChanged)
     Q_PROPERTY(QVariantList remoteActions READ remoteActions WRITE setRemoteActions NOTIFY remoteActionsChanged)
     Q_PROPERTY(bool isTransient READ isTransient WRITE setIsTransient NOTIFY isTransientChanged)
+    Q_PROPERTY(bool resident READ resident WRITE setResident NOTIFY residentChanged)
     Q_PROPERTY(QVariant progress READ progress WRITE setProgress RESET resetProgress NOTIFY progressChanged)
     // deprecated properties
     Q_PROPERTY(QString remoteDBusCallServiceName READ remoteDBusCallServiceName WRITE setRemoteDBusCallServiceName NOTIFY remoteDBusCallChanged)
@@ -171,6 +172,9 @@ public:
     bool isTransient() const;
     void setIsTransient(bool value);
 
+    bool resident() const;
+    void setResident(bool value);
+
     QVariant progress() const;
     void setProgress(const QVariant &value);
     void resetProgress();
@@ -217,6 +221,7 @@ signals:
     void originChanged();
     void maxContentLinesChanged();
     void isTransientChanged();
+    void residentChanged();
     void progressChanged();
 
 private slots:

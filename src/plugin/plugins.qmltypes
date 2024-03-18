@@ -54,6 +54,7 @@ Module {
         Property { name: "itemCount"; type: "int" }
         Property { name: "remoteActions"; type: "QVariantList" }
         Property { name: "isTransient"; type: "bool" }
+        Property { name: "resident"; type: "bool" }
         Property { name: "progress"; type: "QVariant" }
         Property { name: "remoteDBusCallServiceName"; type: "string" }
         Property { name: "remoteDBusCallObjectPath"; type: "string" }

@@ -323,8 +323,9 @@ class NotificationPrivate : public NotificationData
         return vm;
     }
 
-    void setFirstRemoteAction(QVariantMap vm, Notification *q)
+    void setFirstRemoteAction(const QVariantMap &vm_, Notification *q)
     {
+        QVariantMap vm(vm_);
         QString name(vm["name"].value<QString>());
         if (name.isEmpty()) {
             vm.insert("name", QString::fromLatin1(DEFAULT_ACTION_NAME));

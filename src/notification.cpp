@@ -182,14 +182,13 @@ QList<NotificationData::ActionInfo> decodeActions(const QStringList &actions)
 
     QStringList::const_iterator it = actions.constBegin(), end = actions.constEnd();
     while (it != end) {
+        NotificationData::ActionInfo actionInfo;
+        actionInfo.name = *it;
         // If we have an odd number of tokens, add an empty displayName to complete the last pair
-        const QString &name(*it);
-        QString displayName;
         if (++it != end) {
-            displayName = *it;
+            actionInfo.displayName = *it;
             ++it;
         }
-        const NotificationData::ActionInfo actionInfo = { name, displayName };
         rv.append(actionInfo);
     }
 
@@ -324,8 +323,9 @@ class NotificationPrivate : public NotificationData
         return vm;
     }
 
-    void setFirstRemoteAction(QVariantMap vm, Notification *q)
+    void setFirstRemoteAction(const QVariantMap &vm_, Notification *q)
     {
+        QVariantMap vm(vm_);
         QString name(vm["name"].value<QString>());
         if (name.isEmpty()) {
             vm.insert("name", QString::fromLatin1(DEFAULT_ACTION_NAME));

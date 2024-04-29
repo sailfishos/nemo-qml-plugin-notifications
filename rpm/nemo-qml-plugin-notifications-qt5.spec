@@ -39,8 +39,7 @@ BuildRequires: qt5-plugin-sqldriver-sqlite
 %build
 
 %qmake5 VERSION=%{version}
-
-make %{?_smp_mflags}
+%make_build
 
 %install
 rm -rf %{buildroot}

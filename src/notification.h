@@ -37,8 +37,6 @@
 
 #include <QStringList>
 #include <QDateTime>
-#include <QVariantHash>
-#include <QDBusArgument>
 
 struct NotificationData;
 

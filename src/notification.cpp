@@ -33,6 +33,7 @@
 #include "notification.h"
 #include "notification_p.h"
 
+#include <QImage>
 #include <QStringBuilder>
 #include <QDebug>
 

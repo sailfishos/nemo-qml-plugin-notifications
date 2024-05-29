@@ -41,7 +41,6 @@
 #include <QDateTime>
 #include <QVariant>
 #include <QVariantList>
-#include <QImage>
 
 struct NotificationData;
 

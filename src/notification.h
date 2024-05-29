@@ -36,8 +36,12 @@
 #include <notificationexport.h>
 
 #include <QObject>
+#include <QString>
 #include <QStringList>
 #include <QDateTime>
+#include <QVariant>
+#include <QVariantList>
+#include <QImage>
 
 struct NotificationData;
 

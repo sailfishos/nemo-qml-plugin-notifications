@@ -1,7 +1,6 @@
 TARGET = nemonotifications
 PLUGIN_IMPORT_PATH = Nemo/Notifications
 QT += dbus
-QT -= gui
 
 TEMPLATE = lib
 CONFIG += qt plugin hide_symbols

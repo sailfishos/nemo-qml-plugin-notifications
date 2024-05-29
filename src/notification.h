@@ -35,6 +35,7 @@
 
 #include <notificationexport.h>
 
+#include <QObject>
 #include <QStringList>
 #include <QDateTime>
 

@@ -1727,14 +1727,14 @@ void Notification::setIsTransient(bool value)
 
     A resident property is not automatically closed when an action is invoked. It remains until explicitly removed by the user or by the sender.
 
-    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "transient".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "resident".
 */
 /*!
     \property Notification::resident
 
     A resident property is not automatically closed when an action is invoked. It remains until explicitly removed by the user or by the sender.
 
-    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "transient".
+    This property is transmitted as the standard \l{https://specifications.freedesktop.org/notification-spec/latest/ar01s08.html}{hint value} "resident".
 */
 bool Notification::resident() const
 {
